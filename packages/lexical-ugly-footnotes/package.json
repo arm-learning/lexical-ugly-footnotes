@@ -1,0 +1,48 @@
+{
+  "name": "lexical-ugly-footnotes",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
+    "./styles.css": "./dist/index.css"
+  },
+  "scripts": {
+    "build": "turbo run build:styles build:components",
+    "build:components": "tsc",
+    "build:styles": "tailwindcss -i ./src/styles.css -o ./dist/index.css",
+    "dev:components": "tsc --watch",
+    "dev:styles": "tailwindcss -i ./src/styles.css -o ./dist/index.css --watch",
+    "dev": "turbo run dev:styles dev:components",
+    "circular:npx": "npx madge --circular --extensions ts,tsx --ts-config ./tsconfig.json ./src"
+  },
+  "peerDependencies": {
+    "@lexical/react": "catalog:",
+    "@lexical/utils": "catalog:",
+    "@lexical/rich-text": "catalog:",
+    "@lexical/link": "catalog:",
+    "@lexical/history": "catalog:",
+    "@lexical/plain-text": "catalog:",
+    "@lexical/selection": "catalog:",
+    "@lexical/html": "catalog:",
+    "lucide-react": "catalog:",
+    "@types/react": "catalog:",
+    "lexical": "catalog:",
+    "typescript": "catalog:",
+    "tailwind-merge": "catalog:",
+    "tailwindcss": "catalog:",
+    "uuid": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/tailwind-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@tailwindcss/cli": "catalog:"
+  },
+  "dependencies": {
+    "react": "catalog:"
+  }
+}

@@ -1,6 +1,7 @@
 {
   "name": "@repo/ui",
   "version": "0.0.0",
+  "type": "module",
   "sideEffects": [
     "**/*.css"
   ],
@@ -8,29 +9,34 @@
     "dist"
   ],
   "exports": {
+    ".": "./dist/index.js",
     "./styles.css": "./dist/index.css",
     "./*": "./dist/*.js"
   },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "license": "MIT",
   "scripts": {
     "build:styles": "tailwindcss -i ./src/styles.css -o ./dist/index.css",
     "build:components": "tsc",
     "check-types": "tsc --noEmit",
     "dev:styles": "tailwindcss -i ./src/styles.css -o ./dist/index.css --watch",
-    "dev:components": "tsc --watch",
-    "lint": "eslint src --max-warnings 0"
+    "dev:components": "tsc --watch"
   },
   "peerDependencies": {
-    "react": "^19"
+    "react": "catalog:",
+    "lexical-ugly-footnotes": "workspace:*"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
+    "@lexical/react": "catalog:",
+    "@lexical/utils": "catalog:",
     "@repo/tailwind-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@tailwindcss/cli": "^4.1.5",
-    "@types/react": "^19.1.0",
-    "eslint": "^9.39.1",
-    "tailwindcss": "^4.1.5",
-    "typescript": "5.9.2"
+    "@tailwindcss/cli": "catalog:",
+    "@types/react": "catalog:",
+    "lexical": "catalog:",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:",
+    "lucide-react": "catalog:"
   }
 }
