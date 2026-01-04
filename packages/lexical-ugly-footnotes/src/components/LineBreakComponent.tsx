@@ -3,13 +3,9 @@ import { useNodeFocus } from "../hooks/useNodeFocus.js";
 import { useNodeActive } from "../hooks/useNodeActive.js";
 import { useEditorKeyDown } from "../hooks/useEditorKeyDown.js";
 import { twMerge } from "tailwind-merge";
-import { LINE_BREAK_CLASS } from "../constants/line-break.js";
+import type { LineBreakComponentProps } from "../types/line-break.js";
 
-type LineBreakProps = {
-  nodeKey: string;
-};
-
-const LineBreak = ({ nodeKey }: LineBreakProps) => {
+const LineBreak = ({ nodeKey, classNames }: LineBreakComponentProps) => {
   const { isFocus } = useNodeFocus({ nodeKey });
   const { isActive, ref, setActive } = useNodeActive<HTMLDivElement>({});
   const { escapeWithParagraph } = useEditorKeyDown({ nodeKey });
@@ -48,8 +44,8 @@ const LineBreak = ({ nodeKey }: LineBreakProps) => {
       <div
         ref={ref}
         className={twMerge(
-          LINE_BREAK_CLASS.base,
-          isActiveLineBreak && LINE_BREAK_CLASS.active,
+          classNames.container,
+          isActiveLineBreak && classNames.containerActive,
         )}
         onClick={() => setActive(true)}
         onKeyDown={() => setActive(true)}

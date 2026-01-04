@@ -30,6 +30,7 @@ import {
 } from "../constants/block.js";
 import type { ComponentType } from "react";
 import type { BlockComponentProps } from "../types/block.js";
+import { getBlockClasses } from "../theme/index.js";
 
 export const theme: EditorThemeClasses = {
   root: "font-ebgaramond",
@@ -358,17 +359,19 @@ export class FootnoteBlockNode extends DecoratorNode<React.ReactNode> {
     return FootnoteBlockComponent;
   }
 
-  decorate(editor: LexicalEditor): React.ReactNode {
+  decorate(editor: LexicalEditor, config: EditorConfig): React.ReactNode {
     const Component = this.component();
     if (!Component) return null;
     const referenceId = this.getReferenceId();
     const order = this.getOrder();
+    const classes = getBlockClasses(config);
     return (
       <Component
         nodeKey={this.getKey()}
         referenceId={referenceId}
         order={order}
         blockNote={this.__blockNote}
+        classNames={classes}
       />
     );
   }

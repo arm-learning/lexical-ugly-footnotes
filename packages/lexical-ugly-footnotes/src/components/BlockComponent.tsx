@@ -15,6 +15,7 @@ import {
   $removeFootnoteReferenceNodeByReferenceId,
 } from "../core/index.js";
 import type { BlockComponentProps } from "../types/block.js";
+import { twMerge } from "tailwind-merge";
 
 // const EditorContentFloatingToolbar = dynamic(
 // 	() =>
@@ -52,6 +53,7 @@ const FootnoteBlockComponent = ({
   order = 0,
   blockNote,
   sharedHistoryState = true,
+  classNames,
 }: BlockComponentProps) => {
   const [editor] = useLexicalComposerContext();
   const [isSelected, setSelected, clearSelection] =
@@ -77,13 +79,16 @@ const FootnoteBlockComponent = ({
 
   return (
     <>
-      <div className="luf-block-order">
-        <sup className="luf-block-order-number">{order}</sup>
+      <div className={classNames.orderContainer}>
+        <sup className={classNames.order}>{order}</sup>
       </div>
       <LexicalNestedComposer initialEditor={blockNote} initialTheme={theme}>
         <RichTextPlugin
           contentEditable={
-            <ContentEditable className="luf-block-editor" />
+            <ContentEditable className={twMerge(classNames.editor,
+              isSelected && classNames.editorFocused,
+              !isSelected && classNames.editorStatic,
+            )} />
 
           }
           ErrorBoundary={LexicalErrorBoundary}
@@ -98,7 +103,7 @@ const FootnoteBlockComponent = ({
         <HistoryPlugin externalHistoryState={historyState} />
         {/* {sharedHistoryState ? <SharedHistoryStateComponent /> : <HistoryPlugin />} */}
       </LexicalNestedComposer>
-      <button className="luf-block-delete" type="button" onClick={onSubmit}>
+      <button className={classNames.delete} type="button" onClick={onSubmit}>
         <XIcon />
       </button>
     </>

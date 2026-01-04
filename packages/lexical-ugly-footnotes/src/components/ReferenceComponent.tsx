@@ -4,13 +4,13 @@ import { useCallback, useEffect } from "react";
 import { twMerge } from "tailwind-merge";
 import { useNodeActive } from "../hooks/useNodeActive.js";
 import { useNodeFocus } from "../hooks/useNodeFocus.js";
-import { REFERENCE_CLASS } from "../constants/reference.js";
 import type { ReferenceComponentProps } from "../types/reference.js";
 
 const FootnoteReferenceComponent = ({
 	referenceId = "",
 	nodeKey,
 	order = 0,
+	classNames,
 }: ReferenceComponentProps) => {
 	// console.log({ referenceId, nodeKey, order })
 	const [editor] = useLexicalComposerContext();
@@ -46,12 +46,12 @@ const FootnoteReferenceComponent = ({
 			ref={ref}
 			onClick={() => setActive(true)}
 			// onKeyDown={handleKeyDown}
-			onKeyDown={() => {}}
+			onKeyDown={() => { }}
 			tabIndex={0}
 			className={twMerge(
-				REFERENCE_CLASS.sup,
-				isActive && REFERENCE_CLASS.active,
-				isFocus && REFERENCE_CLASS.focus,
+				classNames.sup,
+				isActive && classNames.supActive,
+				isFocus && classNames.supFocused,
 			)}
 		>
 			{order}

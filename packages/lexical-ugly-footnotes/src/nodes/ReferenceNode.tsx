@@ -16,6 +16,7 @@ import FootnoteReferenceComponent from "../components/ReferenceComponent.js";
 import { REFERENCE_ATTR, REFERENCE_CLASS, REFERENCE_TYPE } from "../constants/reference.js";
 import type { ComponentType } from "react";
 import type { ReferenceComponentProps } from "../types/reference.js";
+import { getReferenceClasses } from "../theme/index.js";
 
 // export const PLUGIN_TYPE_FOOTNOTE_REFERENCE = "footnote-reference";
 
@@ -38,7 +39,7 @@ const convertFootnoteReferenceElement = (
 ): DOMConversionOutput | null => {
 	if (
 		domNode instanceof HTMLSpanElement &&
-		domNode.hasAttribute(REFERENCE_ATTR.container) 
+		domNode.hasAttribute(REFERENCE_ATTR.container)
 		// && !domNode.hasAttribute(STUB_ATTR.stub)
 	) {
 		const referenceId = domNode.getAttribute(REFERENCE_ATTR.referenceId);
@@ -165,7 +166,7 @@ export class FootnoteReferenceNode extends DecoratorNode<React.ReactNode> {
 			span: (domNode: Node) => {
 				if (
 					domNode instanceof HTMLSpanElement &&
-					domNode.hasAttribute(REFERENCE_ATTR.container) 
+					domNode.hasAttribute(REFERENCE_ATTR.container)
 					// && !domNode.hasAttribute(STUB_ATTR.stub)
 				) {
 					return {
@@ -228,13 +229,13 @@ export class FootnoteReferenceNode extends DecoratorNode<React.ReactNode> {
 			order: this.__order,
 		};
 	}
-    
+
 	component(): ComponentType<ReferenceComponentProps> | null {
-        return FootnoteReferenceComponent;
-    }
+		return FootnoteReferenceComponent;
+	}
 
 
-	decorate(editor: LexicalEditor): React.ReactNode {
+	decorate(editor: LexicalEditor, config: EditorConfig): React.ReactNode {
 		// const referenceId = this.getReferenceId();
 		// // if (!referenceId) {
 		// // 	throw new Error("Reference ID is required");
@@ -253,18 +254,20 @@ export class FootnoteReferenceNode extends DecoratorNode<React.ReactNode> {
 		// 	</>
 		// );
 		const Component = this.component();
-        if (!Component) return null;
-        
-        const referenceId = this.getReferenceId();
-        const order = this.getOrder();
-        
-        return (
-            <Component
-                referenceId={referenceId}
-                nodeKey={this.getKey()}
-                order={order}
-            />
-        );
+		if (!Component) return null;
+
+		const referenceId = this.getReferenceId();
+		const order = this.getOrder();
+		const classes = getReferenceClasses(config);
+
+		return (
+			<Component
+				referenceId={referenceId}
+				nodeKey={this.getKey()}
+				order={order}
+				classNames={classes}
+			/>
+		);
 	}
 }
 

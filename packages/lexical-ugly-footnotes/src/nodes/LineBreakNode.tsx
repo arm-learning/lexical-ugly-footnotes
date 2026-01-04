@@ -6,6 +6,8 @@ import {
 	type DOMConversionMap,
 	type DOMConversionOutput,
 	type DOMExportOutput,
+	type EditorConfig,
+	type LexicalEditor,
 	type LexicalNode,
 	type LexicalUpdateJSON,
 	type NodeKey,
@@ -17,6 +19,7 @@ import LineBreak from "../components/LineBreakComponent.js";
 import { LINE_BREAK_ATTR, LINE_BREAK_CLASS, LINE_BREAK_TYPE } from "../constants/line-break.js";
 import type { ComponentType } from "react";
 import type { LineBreakComponentProps } from "../types/line-break.js";
+import { getLineBreakClasses } from "../theme/index.js";
 
 // export interface LineBreakComponentProps {
 //     nodeKey: string;
@@ -93,11 +96,11 @@ export class FootnoteLineBreakNode extends DecoratorNode<React.ReactNode> {
 		element.setAttribute(LINE_BREAK_ATTR.container, "");
 		element.classList.add(LINE_BREAK_CLASS.container);
 		element.setAttribute("data-lexical-decorator", "true");
-		
+
 		const lineBreak = document.createElement("div");
 		lineBreak.classList.add(LINE_BREAK_CLASS.base);
 		element.appendChild(lineBreak);
-		
+
 		return { element };
 	}
 
@@ -111,10 +114,11 @@ export class FootnoteLineBreakNode extends DecoratorNode<React.ReactNode> {
 		return LineBreak;
 	}
 
-	decorate(): React.ReactNode {
+	decorate(editor: LexicalEditor, config: EditorConfig): React.ReactNode {
 		const Component = this.component();
 		if (!Component) return null;
-		return <Component nodeKey={this.getKey()} />;
+		const classes = getLineBreakClasses(config);
+		return <Component nodeKey={this.getKey()} classNames={classes} />;
 	}
 }
 

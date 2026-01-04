@@ -41,7 +41,8 @@
     - [x] test
   - [x] add ability to override line
     - [x] test
-- [ ] unwind vite changes for customization
+<!-- - [ ] unwind vite changes for customization
+  - [ ] table for now but leaving vite for after next
 - [ ] determine theme customization
   - [ ] research why beautiful mentions uses the theme class approach
 - [ ] add styles for custom block
@@ -51,4 +52,4 @@
   - [ ] vite
 - [ ] add playwright testing
 - [ ] add changesets
-  - [ ] set version to something below 1
+  - [ ] set version to something below 1 -->
