@@ -14,6 +14,7 @@ import {
   $removeFootnoteByBlockNodeKeyTwo,
   $removeFootnoteReferenceNodeByReferenceId,
 } from "../core/index.js";
+import type { BlockComponentProps } from "../types/block.js";
 
 // const EditorContentFloatingToolbar = dynamic(
 // 	() =>
@@ -37,13 +38,13 @@ import {
 // };
 
 
-interface FootnoteBlockComponentProps {
-  referenceId: string | null;
-  nodeKey: NodeKey;
-  order: number | null;
-  blockNote: LexicalEditor;
-  sharedHistoryState?: boolean;
-}
+// export interface FootnoteBlockComponentProps {
+//   referenceId: string | null;
+//   nodeKey: NodeKey;
+//   order: number | null;
+//   blockNote: LexicalEditor;
+//   sharedHistoryState?: boolean;
+// }
 
 const FootnoteBlockComponent = ({
   referenceId = "",
@@ -51,7 +52,7 @@ const FootnoteBlockComponent = ({
   order = 0,
   blockNote,
   sharedHistoryState = true,
-}: FootnoteBlockComponentProps) => {
+}: BlockComponentProps) => {
   const [editor] = useLexicalComposerContext();
   const [isSelected, setSelected, clearSelection] =
     useLexicalNodeSelection(nodeKey);
@@ -76,13 +77,14 @@ const FootnoteBlockComponent = ({
 
   return (
     <>
-      <div>
-        <sup>{order}</sup>
+      <div className="luf-block-order">
+        <sup className="luf-block-order-number">{order}</sup>
       </div>
       <LexicalNestedComposer initialEditor={blockNote} initialTheme={theme}>
         <RichTextPlugin
           contentEditable={
-            <ContentEditable className="h-full outline-none relative rounded-xl px-1 py-3 bg-background border-2 border-primary/50" />
+            <ContentEditable className="luf-block-editor" />
+
           }
           ErrorBoundary={LexicalErrorBoundary}
           placeholder={null}
@@ -96,7 +98,7 @@ const FootnoteBlockComponent = ({
         <HistoryPlugin externalHistoryState={historyState} />
         {/* {sharedHistoryState ? <SharedHistoryStateComponent /> : <HistoryPlugin />} */}
       </LexicalNestedComposer>
-      <button type="button" onClick={onSubmit}>
+      <button className="luf-block-delete" type="button" onClick={onSubmit}>
         <XIcon />
       </button>
     </>

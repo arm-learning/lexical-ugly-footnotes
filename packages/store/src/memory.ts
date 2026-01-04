@@ -1,5 +1,5 @@
-import { DEFAULT_JSON_STATE } from './defaults/json';
-import { DEFAULT_HTML_CONTENT } from './defaults/html';
+import { DEFAULT_JSON_STATE } from './defaults/json.js';
+import { DEFAULT_HTML_CONTENT } from './defaults/html.js';
 
 export type ContentFormat = 'json' | 'html';
 

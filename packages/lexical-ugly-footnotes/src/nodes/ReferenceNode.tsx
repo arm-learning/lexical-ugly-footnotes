@@ -13,14 +13,17 @@ import {
 } from "lexical";
 import { footnoteService } from "../core/index.js";
 import FootnoteReferenceComponent from "../components/ReferenceComponent.js";
+import { REFERENCE_ATTR, REFERENCE_CLASS, REFERENCE_TYPE } from "../constants/reference.js";
+import type { ComponentType } from "react";
+import type { ReferenceComponentProps } from "../types/reference.js";
 
-export const PLUGIN_TYPE_FOOTNOTE_REFERENCE = "footnote-reference";
+// export const PLUGIN_TYPE_FOOTNOTE_REFERENCE = "footnote-reference";
 
-export const REFERENCE_ATTR = {
-	container: `data-${PLUGIN_TYPE_FOOTNOTE_REFERENCE}-container`,
-	referenceId: `data-${PLUGIN_TYPE_FOOTNOTE_REFERENCE}-reference-id`,
-	order: `data-${PLUGIN_TYPE_FOOTNOTE_REFERENCE}-order`,
-};
+// export const REFERENCE_ATTR = {
+// 	container: `data-${PLUGIN_TYPE_FOOTNOTE_REFERENCE}-container`,
+// 	referenceId: `data-${PLUGIN_TYPE_FOOTNOTE_REFERENCE}-reference-id`,
+// 	order: `data-${PLUGIN_TYPE_FOOTNOTE_REFERENCE}-order`,
+// };
 
 export type SerializedFootnoteReferenceNode = Spread<
 	{
@@ -72,7 +75,7 @@ export class FootnoteReferenceNode extends DecoratorNode<React.ReactNode> {
 	}
 
 	static getType(): string {
-		return PLUGIN_TYPE_FOOTNOTE_REFERENCE;
+		return REFERENCE_TYPE;
 	}
 
 	// isInline(): boolean {
@@ -192,7 +195,8 @@ export class FootnoteReferenceNode extends DecoratorNode<React.ReactNode> {
 		supElement.setAttribute(REFERENCE_ATTR.referenceId, this.__reference_id);
 		supElement.setAttribute(REFERENCE_ATTR.order, this.__order.toString());
 		supElement.innerHTML = this.__order.toString();
-		addClassNamesToElement(supElement, "cursor-pointer pl-[2px]");
+		// addClassNamesToElement(supElement, "cursor-pointer pl-[2px]");
+		addClassNamesToElement(supElement, REFERENCE_CLASS.sup);
 		spanElement.appendChild(supElement);
 		return {
 			element: spanElement,
@@ -224,34 +228,57 @@ export class FootnoteReferenceNode extends DecoratorNode<React.ReactNode> {
 			order: this.__order,
 		};
 	}
+    
+	component(): ComponentType<ReferenceComponentProps> | null {
+        return FootnoteReferenceComponent;
+    }
+
 
 	decorate(editor: LexicalEditor): React.ReactNode {
-		const referenceId = this.getReferenceId();
-		// if (!referenceId) {
-		// 	throw new Error("Reference ID is required");
-		// }
-		const order = this.getOrder();
-		// if (typeof order !== "number" || Number.isNaN(order)) {
-		// 	throw new Error("Order is required");
-		// }
-		return (
-			<>
-				<FootnoteReferenceComponent
-					referenceId={referenceId}
-					nodeKey={this.getKey()}
-					order={order}
-				/>
-			</>
-		);
+		// const referenceId = this.getReferenceId();
+		// // if (!referenceId) {
+		// // 	throw new Error("Reference ID is required");
+		// // }
+		// const order = this.getOrder();
+		// // if (typeof order !== "number" || Number.isNaN(order)) {
+		// // 	throw new Error("Order is required");
+		// // }
+		// return (
+		// 	<>
+		// 		<FootnoteReferenceComponent
+		// 			referenceId={referenceId}
+		// 			nodeKey={this.getKey()}
+		// 			order={order}
+		// 		/>
+		// 	</>
+		// );
+		const Component = this.component();
+        if (!Component) return null;
+        
+        const referenceId = this.getReferenceId();
+        const order = this.getOrder();
+        
+        return (
+            <Component
+                referenceId={referenceId}
+                nodeKey={this.getKey()}
+                order={order}
+            />
+        );
 	}
 }
 
+let ReferenceNodeClass: typeof FootnoteReferenceNode = FootnoteReferenceNode;
+export const registerReferenceNodeClass = (klass: typeof FootnoteReferenceNode) => {
+	ReferenceNodeClass = klass;
+}
 export const $createFootnoteReferenceNode = (
 	referenceId?: string | null,
 	order?: number | null,
 	key?: NodeKey,
 ): FootnoteReferenceNode => {
-	const node = new FootnoteReferenceNode(referenceId, order, key);
+	const node = new ReferenceNodeClass(referenceId, order, key);
+	// const node = new FootnoteReferenceNode(referenceId, order, key);
 	if (referenceId) {
 		node.setReferenceId(referenceId);
 	}

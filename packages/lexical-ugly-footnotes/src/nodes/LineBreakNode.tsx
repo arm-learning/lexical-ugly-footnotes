@@ -14,30 +14,22 @@ import {
 } from "lexical";
 import type React from "react";
 import LineBreak from "../components/LineBreakComponent.js";
+import { LINE_BREAK_ATTR, LINE_BREAK_CLASS, LINE_BREAK_TYPE } from "../constants/line-break.js";
+import type { ComponentType } from "react";
+import type { LineBreakComponentProps } from "../types/line-break.js";
+
+// export interface LineBreakComponentProps {
+//     nodeKey: string;
+// }
+
+
 
 export type FootnoteLineBreakNodeProps = {};
 
-type SerializedFootnoteLineBreakNode = Spread<
+export type SerializedFootnoteLineBreakNode = Spread<
 	FootnoteLineBreakNodeProps,
 	SerializedLexicalNode
 >;
-
-export const PLUGIN_TYPE_LINE_BREAK = "footnote-linebreak";
-
-const ATTR = {
-	container: `data-editor-${PLUGIN_TYPE_LINE_BREAK}-container`,
-};
-
-const CLASS_NAME = {
-	container: `editor-${PLUGIN_TYPE_LINE_BREAK}-container`,
-};
-
-const makeFootnoteLineBreakDom = (): HTMLSpanElement => {
-	const container = document.createElement("span");
-	addClassNamesToElement(container, "inline-block w-full h-px bg-foreground");
-
-	return container;
-};
 
 export const convertFootnoteLineBreakNode = (
 	_domNode: HTMLDivElement,
@@ -54,7 +46,7 @@ export class FootnoteLineBreakNode extends DecoratorNode<React.ReactNode> {
 	}
 
 	static getType(): string {
-		return PLUGIN_TYPE_LINE_BREAK;
+		return LINE_BREAK_TYPE;
 	}
 
 	static clone(node: FootnoteLineBreakNode): FootnoteLineBreakNode {
@@ -63,8 +55,8 @@ export class FootnoteLineBreakNode extends DecoratorNode<React.ReactNode> {
 
 	createDOM(): HTMLElement {
 		const div = document.createElement("div");
-		div.setAttribute(ATTR.container, "");
-		div.classList.add(CLASS_NAME.container);
+		div.setAttribute(LINE_BREAK_ATTR.container, "");
+		div.classList.add(LINE_BREAK_CLASS.container);
 		return div;
 	}
 
@@ -75,7 +67,7 @@ export class FootnoteLineBreakNode extends DecoratorNode<React.ReactNode> {
 	static importDOM(): DOMConversionMap<HTMLDivElement> | null {
 		return {
 			div: (domNode: HTMLDivElement) => {
-				if (!domNode.hasAttribute(ATTR.container)) return null;
+				if (!domNode.hasAttribute(LINE_BREAK_ATTR.container)) return null;
 				return {
 					conversion: convertFootnoteLineBreakNode,
 					priority: 2,
@@ -98,14 +90,15 @@ export class FootnoteLineBreakNode extends DecoratorNode<React.ReactNode> {
 
 	exportDOM(): DOMExportOutput {
 		const element = document.createElement("div");
-		element.setAttribute(ATTR.container, "");
-		element.classList.add(CLASS_NAME.container);
+		element.setAttribute(LINE_BREAK_ATTR.container, "");
+		element.classList.add(LINE_BREAK_CLASS.container);
 		element.setAttribute("data-lexical-decorator", "true");
-		const container = makeFootnoteLineBreakDom();
-		element.appendChild(container);
-		return {
-			element,
-		};
+		
+		const lineBreak = document.createElement("div");
+		lineBreak.classList.add(LINE_BREAK_CLASS.base);
+		element.appendChild(lineBreak);
+		
+		return { element };
 	}
 
 	override exportJSON(): SerializedFootnoteLineBreakNode {
@@ -114,17 +107,25 @@ export class FootnoteLineBreakNode extends DecoratorNode<React.ReactNode> {
 		};
 	}
 
+	component(): ComponentType<LineBreakComponentProps> | null {
+		return LineBreak;
+	}
+
 	decorate(): React.ReactNode {
-		return (
-			<>
-				<LineBreak nodeKey={this.getKey()} />
-			</>
-		);
+		const Component = this.component();
+		if (!Component) return null;
+		return <Component nodeKey={this.getKey()} />;
 	}
 }
 
+let LineBreakNodeClass: typeof FootnoteLineBreakNode = FootnoteLineBreakNode;
+
+export const registerLineBreakNodeClass = (klass: typeof FootnoteLineBreakNode) => {
+	LineBreakNodeClass = klass;
+}
 export const $createFootnoteLineBreakNode = (): FootnoteLineBreakNode => {
-	return new FootnoteLineBreakNode();
+	// return new FootnoteLineBreakNode();
+	return new LineBreakNodeClass();
 };
 
 export const $isFootnoteLineBreakNode = (

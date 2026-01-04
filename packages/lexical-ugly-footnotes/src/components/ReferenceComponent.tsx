@@ -1,21 +1,17 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $getNodeByKey, type NodeKey } from "lexical";
+import { $getNodeByKey } from "lexical";
 import { useCallback, useEffect } from "react";
 import { twMerge } from "tailwind-merge";
 import { useNodeActive } from "../hooks/useNodeActive.js";
 import { useNodeFocus } from "../hooks/useNodeFocus.js";
-
-interface FootnoteReferenceComponentProps {
-	referenceId: string | null;
-	nodeKey: NodeKey;
-	order: number | null;
-}
+import { REFERENCE_CLASS } from "../constants/reference.js";
+import type { ReferenceComponentProps } from "../types/reference.js";
 
 const FootnoteReferenceComponent = ({
 	referenceId = "",
 	nodeKey,
 	order = 0,
-}: FootnoteReferenceComponentProps) => {
+}: ReferenceComponentProps) => {
 	// console.log({ referenceId, nodeKey, order })
 	const [editor] = useLexicalComposerContext();
 	// const { removeNodeAndReplaceParagraph } = useNodeRemove({ nodeKey });
@@ -53,9 +49,9 @@ const FootnoteReferenceComponent = ({
 			onKeyDown={() => {}}
 			tabIndex={0}
 			className={twMerge(
-				"cursor-pointer pl-[2px]",
-				isActive && "border-2 border-primary",
-				isFocus && "border-2 border-primary",
+				REFERENCE_CLASS.sup,
+				isActive && REFERENCE_CLASS.active,
+				isFocus && REFERENCE_CLASS.focus,
 			)}
 		>
 			{order}

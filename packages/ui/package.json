@@ -30,6 +30,8 @@
   "devDependencies": {
     "@lexical/react": "catalog:",
     "@lexical/utils": "catalog:",
+    "@lexical/rich-text": "catalog:",
+    "@lexical/html": "catalog:",
     "@repo/tailwind-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@tailwindcss/cli": "catalog:",
@@ -37,6 +39,7 @@
     "lexical": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
-    "lucide-react": "catalog:"
+    "lucide-react": "catalog:",
+    "@base-ui-components/react": "catalog:"
   }
 }

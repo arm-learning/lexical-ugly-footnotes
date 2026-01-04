@@ -1,18 +1,54 @@
 # todo
 
-- [ ] add footnote
-  - [ ] shared editor
+- [x] add footnote
+  - [x] shared editor
     - [x] add button to insert footnote
-    - [ ] add hotkey to insert footnote
+    - [x] add hotkey to insert footnote
       - [x] attempted, but problems
-      - [ ] need to determine what the hotkey is
-    - [ ] add ability to delete footnote
+      - [x] need to determine what the hotkey is
+        - [x] tabled for now
+    - [x] add ability to delete footnote
       - [x] using block button
       - [x] using delete on reference
-- [ ] add in memory store
-  - [ ] vite
-    - [ ] requires adding server?
+- [x] add in memory store
+  - [x] vite
+    - [x] requires adding server?
+  - [x] nextjs
+- [x] add server side rendering
+  - [x] nextjs
+  - [x] vite
+    - [x] tabled for now
+- [ ] update block
+  - [x] update constants
+  - [ ] update classes
+    - [x] determine if we should have consistent classes between line and block
+    - [x] read through classes to see if they are all relevant 
+    - [x] test display of block
+    - [x] update export dom
+    - [ ] test overrides of classes
+- [ ] update reference
+  - [x] update constants
+  - [ ] update classes
+    - [x] determine if we should have consistent classes between line and block
+    - [x] read through classes to see if they are all relevant 
+    - [x] test display of block
+    - [x] update export dom
+    - [ ] test overrides of classes
+- [x] add node override
+  - [x] add ability to override block
+    - [x] test
+  - [x] add ability to override reference
+    - [x] test
+  - [x] add ability to override line
+    - [x] test
+- [ ] unwind vite changes for customization
+- [ ] determine theme customization
+  - [ ] research why beautiful mentions uses the theme class approach
+- [ ] add styles for custom block
+- [ ] add nested editor approach in nextjs
+- [ ] add saving the server
   - [ ] nextjs
-- [ ] add server side rendering
-  - [ ] nextjs
   - [ ] vite
+- [ ] add playwright testing
+- [ ] add changesets
+  - [ ] set version to something below 1

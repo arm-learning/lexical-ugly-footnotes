@@ -11,3 +11,9 @@ export * from "./components/SharedHistoryState.js";
 
 export * from "./plugins/FootnotePlugin.js";
 export * from "./plugins/NestedFootnotePlugin.js";
+
+export * from "./factories/index.js";
+
+export * from "./types/block.js";
+export * from "./types/line-break.js";
+export * from "./types/reference.js";
