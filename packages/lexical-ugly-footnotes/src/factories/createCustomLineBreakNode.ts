@@ -1,7 +1,7 @@
 import type { ComponentType } from "react";
-import { FootnoteLineBreakNode, registerLineBreakNodeClass, type SerializedFootnoteLineBreakNode } from "../nodes/LineBreakNode.js";
+import { FootnoteLineBreakNode, registerLineBreakNodeClass, type SerializedFootnoteLineBreakNode } from "../nodes/LineBreakNode.client.js";
 import type { LexicalNodeReplacement } from "lexical";
-import { LINE_BREAK_TYPE } from "../constants/line-break.js";
+import { LINE_BREAK_TYPE } from "../shared/constants/line-break.js";
 import type { LineBreakComponentProps } from "../types/line-break.js";
 
 export type CustomLineBreakNodeClass = typeof FootnoteLineBreakNode;

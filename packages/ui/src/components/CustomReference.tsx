@@ -1,4 +1,4 @@
-import { createCustomReferenceNode, type ReferenceComponentProps } from "lexical-ugly-footnotes";
+import { createCustomReferenceNode, type ReferenceComponentProps } from "lexical-ugly-footnotes/client";
 
 
 const MyReference = ({ nodeKey, referenceId, order }: ReferenceComponentProps) => (

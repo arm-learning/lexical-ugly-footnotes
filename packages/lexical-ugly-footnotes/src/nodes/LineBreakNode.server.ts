@@ -1,12 +1,8 @@
-// import LineBreak from "@/app/_components/Editor/plugins/LineBreakPlugin/components/LineBreak";
-
-import { addClassNamesToElement } from "@lexical/utils";
 import {
 	DecoratorNode,
 	type DOMConversionMap,
 	type DOMConversionOutput,
 	type DOMExportOutput,
-	type EditorConfig,
 	type LexicalEditor,
 	type LexicalNode,
 	type LexicalUpdateJSON,
@@ -14,18 +10,7 @@ import {
 	type SerializedLexicalNode,
 	type Spread,
 } from "lexical";
-import type React from "react";
-import LineBreak from "../components/LineBreakComponent.js";
-import { LINE_BREAK_ATTR, LINE_BREAK_CLASS, LINE_BREAK_TYPE } from "../constants/line-break.js";
-import type { ComponentType } from "react";
-import type { LineBreakComponentProps } from "../types/line-break.js";
-import { getLineBreakClasses } from "../theme/index.js";
-
-// export interface LineBreakComponentProps {
-//     nodeKey: string;
-// }
-
-
+import { LINE_BREAK_ATTR, LINE_BREAK_CLASS, LINE_BREAK_TYPE } from "../shared/constants/line-break.js";
 
 export type FootnoteLineBreakNodeProps = {};
 
@@ -43,7 +28,7 @@ export const convertFootnoteLineBreakNode = (
 	};
 };
 
-export class FootnoteLineBreakNode extends DecoratorNode<React.ReactNode> {
+export class FootnoteLineBreakNode extends DecoratorNode<unknown> {
 	constructor(key?: NodeKey) {
 		super(key);
 	}
@@ -109,17 +94,6 @@ export class FootnoteLineBreakNode extends DecoratorNode<React.ReactNode> {
 			...super.exportJSON(),
 		};
 	}
-
-	component(): ComponentType<LineBreakComponentProps> | null {
-		return LineBreak;
-	}
-
-	decorate(editor: LexicalEditor, config: EditorConfig): React.ReactNode {
-		const Component = this.component();
-		if (!Component) return null;
-		const classes = getLineBreakClasses(config);
-		return <Component nodeKey={this.getKey()} classNames={classes} />;
-	}
 }
 
 let LineBreakNodeClass: typeof FootnoteLineBreakNode = FootnoteLineBreakNode;
@@ -137,3 +111,4 @@ export const $isFootnoteLineBreakNode = (
 ): node is FootnoteLineBreakNode => {
 	return node instanceof FootnoteLineBreakNode;
 };
+

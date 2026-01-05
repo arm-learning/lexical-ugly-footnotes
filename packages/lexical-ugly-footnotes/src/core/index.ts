@@ -10,181 +10,14 @@ import {
 	type LexicalNode,
 	type NodeCaret,
 } from "lexical";
-import { FootnoteReferenceNode } from "../nodes/ReferenceNode.js";
-import { REMOVE_FOOTNOTE_REFERENCE_NODE_BY_REFERENCE_ID_COMMAND, UPDATE_FOOTNOTE_ORDERS_COMMAND } from "../plugins/NestedFootnotePlugin.js";
-import { $createFootnoteBlockNode, FootnoteBlockNode } from "../nodes/BlockNode.js";
-import { $createFootnoteLineBreakNode, $isFootnoteLineBreakNode, type FootnoteLineBreakNode } from "../nodes/LineBreakNode.js";
+import { FootnoteReferenceNode } from "../nodes/ReferenceNode.server.js";
+import { $createFootnoteBlockNode, FootnoteBlockNode } from "../nodes/BlockNode.server.js";
+import { $createFootnoteLineBreakNode, $isFootnoteLineBreakNode, type FootnoteLineBreakNode } from "../nodes/LineBreakNode.server.js";
+import { footnoteService, type RefId, type FootnoteRef, type FootnoteBlock } from "../shared/service.js";
 
-export type RefId = string;
-
-export interface FootnoteRef {
-	id: RefId;
-	order: number;
-}
-export interface FootnoteBlock {
-	id: RefId;
-	order: number;
-}
-
-export class FootnoteService {
-	// canonical state
-	private refs = new Map<RefId, FootnoteRef>();
-	private blocks = new Map<RefId, FootnoteBlock>();
-
-	// doc-order cache (IDs only)
-	private docOrderIds: RefId[] = [];
-	private idToIndex = new Map<RefId, number>(); // 0-based index into docOrderIds
-
-	/** ————— basics ————— */
-
-	clear() {
-		this.refs.clear();
-		this.blocks.clear();
-		this.docOrderIds = [];
-		this.idToIndex.clear();
-	}
-
-	getReferencesSorted(): FootnoteRef[] {
-		return Array.from(this.refs.values()).sort((a, b) => a.order - b.order);
-	}
-	getBlocksSorted(): FootnoteBlock[] {
-		return Array.from(this.blocks.values()).sort((a, b) => a.order - b.order);
-	}
-
-	/** ————— doc-order index ————— */
-
-	/** Replace the entire doc-order (IDs only) and mirror orders into refs/blocks */
-	setDocOrder(ids: RefId[]) {
-		this.docOrderIds = ids.slice();
-		this.idToIndex.clear();
-		ids.forEach((id, i) => this.idToIndex.set(id, i));
-
-		// mirror 1-based order into refs/blocks
-		ids.forEach((id, i) => {
-			const order = i + 1;
-			const r = this.refs.get(id);
-			if (r) this.refs.set(id, { ...r, order });
-			const b = this.blocks.get(id);
-			if (b) this.blocks.set(id, { ...b, order });
-		});
-	}
-
-	getDocOrderIds(): RefId[] {
-		return this.docOrderIds;
-	}
-	indexOf(id: RefId): number | undefined {
-		return this.idToIndex.get(id);
-	}
-	/** Next 1-based order immediately after prevId; if none, returns 1 */
-	nextOrderAfter(prevId?: RefId | null): number {
-		if (!prevId) return 1;
-		const i = this.idToIndex.get(prevId);
-		return i === undefined ? 1 : i + 2; // index 0 => order 1, “after” => +2
-	}
-
-	/** Insert a new id at a 1-based order, shifting others */
-	insertIntoDocOrderAt(id: RefId, order: number) {
-		const pos = Math.max(0, Math.min(order - 1, this.docOrderIds.length));
-		this.docOrderIds.splice(pos, 0, id);
-		this.setDocOrder(this.docOrderIds);
-	}
-
-	/** Remove an id from doc-order (and mirror) */
-	removeFromDocOrder(id: RefId) {
-		const i = this.idToIndex.get(id);
-		if (i === undefined) return;
-		this.docOrderIds.splice(i, 1);
-		this.setDocOrder(this.docOrderIds);
-	}
-
-	/** ————— high-level mutations ————— */
-
-	/** Upsert a reference; if order provided, shift others accordingly */
-	upsertReference(id: RefId, order?: number): number {
-		if (order === undefined) {
-			// append at end in doc-order
-			this.docOrderIds.push(id);
-			this.setDocOrder(this.docOrderIds);
-			this.refs.set(id, { id, order: this.docOrderIds.length });
-			return this.docOrderIds.length;
-		}
-		// place at specific 1-based position
-		this.insertIntoDocOrderAt(id, order);
-		const final = this.indexOf(id)! + 1;
-		this.refs.set(id, { id, order: final });
-		return final;
-	}
-
-	/** Upsert a block; default to its reference’s order */
-	upsertBlock(id: RefId, order?: number): number {
-		const ref = this.refs.get(id);
-		const final = order ?? ref?.order ?? this.indexOf(id)! + 1;
-		this.blocks.set(id, { id, order: final });
-		return final;
-	}
-
-	/** Remove both ref and block, shifting everything down */
-	removeRefAndBlock(id: RefId) {
-		this.refs.delete(id);
-		this.blocks.delete(id);
-		this.removeFromDocOrder(id); // re-numbers remaining items
-	}
-
-	/** Orphan-clean helpers, if you want them */
-	getOrphanedRefs(): RefId[] {
-		return Array.from(this.refs.values())
-			.filter((r) => !this.blocks.has(r.id))
-			.map((r) => r.id);
-	}
-	getOrphanedBlocks(): RefId[] {
-		return Array.from(this.blocks.values())
-			.filter((b) => !this.refs.has(b.id))
-			.map((b) => b.id);
-	}
-	hasBlock(id: RefId): boolean {
-		return this.blocks.has(id);
-	}
-	hasReference(id: RefId): boolean {
-		return this.refs.has(id);
-	}
-
-	cleanup(): void {
-		// Remove orphaned references
-		const orphanedRefs = this.getOrphanedRefs();
-		for (const id of orphanedRefs) {
-			this.refs.delete(id);
-			this.removeFromDocOrder(id);
-		};
-
-		// Remove orphaned blocks
-		const orphanedBlocks = this.getOrphanedBlocks();
-		for (const id of orphanedBlocks) {
-			this.blocks.delete(id);
-			this.removeFromDocOrder(id);
-		};
-	}
-	/** Remove any ref/block entries whose ids are not in `allowedIds`.
-      DOES NOT touch docOrderIds/idToIndex. */
-	pruneToIds(allowedIds: Set<RefId>) {
-		for (const id of Array.from(this.refs.keys())) {
-			if (!allowedIds.has(id)) this.refs.delete(id);
-		}
-		for (const id of Array.from(this.blocks.keys())) {
-			if (!allowedIds.has(id)) this.blocks.delete(id);
-		}
-	}
-
-	debug() {
-		console.log({
-			refs: this.refs,
-			blocks: this.blocks,
-			docOrderIds: this.docOrderIds,
-			idToIndex: this.idToIndex,
-		});
-	}
-}
-
-export const footnoteService = new FootnoteService();
+// Re-export shared types and service
+export type { RefId, FootnoteRef, FootnoteBlock };
+export { footnoteService };
 
 /** previous node in document (pre-order) */
 function $prevInDocument(node: LexicalNode | null): LexicalNode | null {
@@ -244,7 +77,7 @@ export interface FootnoteContainerConfig<TContainer extends LexicalNode = Lexica
 }
 
 // biome-ignore lint: any
-let containerConfig: FootnoteContainerConfig<any> | null = null;
+export let containerConfig: FootnoteContainerConfig<any> | null = null;
 
 export function configureFootnoteContainer<TContainer extends LexicalNode>(
 	config: FootnoteContainerConfig<TContainer>,
@@ -252,7 +85,7 @@ export function configureFootnoteContainer<TContainer extends LexicalNode>(
 	containerConfig = config;
 }
 
-const isContainerNode = <TContainer extends LexicalNode>(node: LexicalNode): node is TContainer => {
+export const isContainerNode = <TContainer extends LexicalNode>(node: LexicalNode): node is TContainer => {
 	if (!containerConfig?.containerNodeClass) return false;
 	return node instanceof containerConfig.containerNodeClass;
 };
@@ -697,171 +530,6 @@ export function $mirrorOrdersFromServiceIntoCurrentEditor(): void {
 			if (!id) continue;
 			const idx = footnoteService.indexOf(id);
 			if (idx !== undefined) node.setOrder(idx + 1);
-		}
-	}
-}
-export function $reorderAllReferencesFromService(): void {
-	const root = $getRoot();
-
-	// Start at the beginning of the document
-	let caret: NodeCaret<"next"> | null = $getChildCaretOrSelf(
-		$getSiblingCaret(root, "next"),
-	);
-
-	function step<D extends CaretDirection>(
-		currentCaret: NodeCaret<D>,
-	): null | NodeCaret<D> {
-		// Get the next adjacent position
-		const nextCaret = currentCaret.getAdjacentCaret();
-		return (
-			// If there's a next position and it's an element, enter it
-			nextCaret?.getChildCaret() ||
-			// Otherwise just use the next position
-			nextCaret ||
-			// If no next position, try to go up to parent
-			currentCaret.getParentCaret("root")
-		);
-	}
-	for (; caret !== null; caret = step(caret)) {
-		const nodeAt = caret.getNodeAtCaret();
-		if (!nodeAt) continue;
-
-		// Found a footnote reference
-		if (nodeAt instanceof FootnoteReferenceNode) {
-			const referenceId = nodeAt.getReferenceId();
-			if (!referenceId) continue;
-			const idx = footnoteService.indexOf(referenceId);
-			if (idx !== undefined) {
-				nodeAt.setOrder(idx + 1);
-				if (footnoteService.hasBlock(referenceId)) {
-					footnoteService.upsertBlock(referenceId, idx + 1);
-				}
-			}
-		}
-
-		// Found a nested editor (Frame)
-		// if (nodeAt instanceof FrameNode) {
-		// 	const frame = nodeAt.getFrame();
-		if (isContainerNode(nodeAt)) {
-			const containerEditor = containerConfig?.getNestedEditor?.(nodeAt);
-			if (!containerEditor) continue;
-			containerEditor.dispatchCommand(UPDATE_FOOTNOTE_ORDERS_COMMAND, undefined);
-			// frame.getEditorState().read(() => {
-			//     const childRoot = $getRoot();
-
-			//     // Recursively traverse the nested editor
-			//     let childCaret: NodeCaret<"next"> | null = $getChildCaretOrSelf(
-			//         $getSiblingCaret(childRoot, "next")
-			//     );
-
-			//     function childStep<D extends CaretDirection>(
-			//         currentCaret: NodeCaret<D>,
-			//     ): null | NodeCaret<D> {
-			//         const nextCaret = currentCaret.getAdjacentCaret();
-			//         return (
-			//             nextCaret?.getChildCaret() ||
-			//             nextCaret ||
-			//             currentCaret.getParentCaret("root")
-			//         );
-			//     }
-
-			//     // Traverse the nested editor
-			//     for (; childCaret !== null; childCaret = childStep(childCaret)) {
-			//         const childNodeAt = childCaret.getNodeAtCaret();
-			//         if (!childNodeAt) continue;
-
-			//         if (childNodeAt instanceof FootnoteReferenceNode) {
-			//             const referenceId = childNodeAt.getReferenceId();
-			//             if (!referenceId) continue;
-			//             const idx = footnoteService.indexOf(referenceId);
-			//             if (idx !== undefined) childNodeAt.setOrder(idx + 1);
-			//         }
-			//     }
-			// });
-		}
-	}
-}
-
-export function $removeFootnoteReferenceNodeByReferenceId(
-	targetReferenceId: string,
-): void {
-	const root = $getRoot();
-
-	// Start at the beginning of the document
-	let caret: NodeCaret<"next"> | null = $getChildCaretOrSelf(
-		$getSiblingCaret(root, "next"),
-	);
-
-	function step<D extends CaretDirection>(
-		currentCaret: NodeCaret<D>,
-	): null | NodeCaret<D> {
-		// Get the next adjacent position
-		const nextCaret = currentCaret.getAdjacentCaret();
-		return (
-			// If there's a next position and it's an element, enter it
-			nextCaret?.getChildCaret() ||
-			// Otherwise just use the next position
-			nextCaret ||
-			// If no next position, try to go up to parent
-			currentCaret.getParentCaret("root")
-		);
-	}
-	for (; caret !== null; caret = step(caret)) {
-		const nodeAt = caret.getNodeAtCaret();
-		if (!nodeAt) continue;
-
-		// Found a footnote reference
-		if (nodeAt instanceof FootnoteReferenceNode) {
-			const referenceId = nodeAt.getReferenceId();
-			// if (!referenceId) continue;
-
-			if (referenceId === targetReferenceId) {
-				nodeAt.remove();
-			}
-		}
-
-		// Found a nested editor (Frame)
-		// if (nodeAt instanceof FrameNode) {
-		// 	const frame = nodeAt.getFrame();
-		if (isContainerNode(nodeAt)) {
-			const containerEditor = containerConfig?.getNestedEditor?.(nodeAt);
-			if (!containerEditor) continue;
-			containerEditor.dispatchCommand(
-				REMOVE_FOOTNOTE_REFERENCE_NODE_BY_REFERENCE_ID_COMMAND,
-				targetReferenceId,
-			);
-			// frame.getEditorState().read(() => {
-			//     const childRoot = $getRoot();
-
-			//     // Recursively traverse the nested editor
-			//     let childCaret: NodeCaret<"next"> | null = $getChildCaretOrSelf(
-			//         $getSiblingCaret(childRoot, "next")
-			//     );
-
-			//     function childStep<D extends CaretDirection>(
-			//         currentCaret: NodeCaret<D>,
-			//     ): null | NodeCaret<D> {
-			//         const nextCaret = currentCaret.getAdjacentCaret();
-			//         return (
-			//             nextCaret?.getChildCaret() ||
-			//             nextCaret ||
-			//             currentCaret.getParentCaret("root")
-			//         );
-			//     }
-
-			//     // Traverse the nested editor
-			//     for (; childCaret !== null; childCaret = childStep(childCaret)) {
-			//         const childNodeAt = childCaret.getNodeAtCaret();
-			//         if (!childNodeAt) continue;
-
-			//         if (childNodeAt instanceof FootnoteReferenceNode) {
-			//             const referenceId = childNodeAt.getReferenceId();
-			//             if (!referenceId) continue;
-			//             const idx = footnoteService.indexOf(referenceId);
-			//             if (idx !== undefined) childNodeAt.setOrder(idx + 1);
-			//         }
-			//     }
-			// });
 		}
 	}
 }

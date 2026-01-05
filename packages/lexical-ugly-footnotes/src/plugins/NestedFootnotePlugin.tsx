@@ -22,7 +22,7 @@ import { useEffect } from "react";
 import { INSERT_FOOTNOTE_BLOCK_COMMAND, RECONCILE_FOOTNOTES_COMMAND } from "./FootnotePlugin.js";
 import { footnoteService, isEditorActive, nextOrderForChildInsertion } from "../core/index.js";
 import { v7 as uuidv7 } from "uuid";
-import { $createFootnoteReferenceNode, FootnoteReferenceNode } from "../nodes/ReferenceNode.js";
+import { $createFootnoteReferenceNode, FootnoteReferenceNode } from "../nodes/ReferenceNode.client.js";
 
 interface NestedFootnotePluginProps {
 	editor: LexicalEditor;

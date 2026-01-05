@@ -21,16 +21,12 @@ import {
   type Spread,
   TextNode,
 } from "lexical";
-import { footnoteService } from "../core/index.js";
-import FootnoteBlockComponent from "../components/BlockComponent.js";
+import { footnoteService } from "../shared/service.js";
 import {
   BLOCK_ATTR,
   BLOCK_ATTR_NESTED_EDITOR,
   BLOCK_TYPE,
-} from "../constants/block.js";
-import type { ComponentType } from "react";
-import type { BlockComponentProps } from "../types/block.js";
-import { getBlockClasses } from "../theme/index.js";
+} from "../shared/constants/block.js";
 
 export const theme: EditorThemeClasses = {
   root: "font-ebgaramond",
@@ -136,7 +132,7 @@ export type SerializedFootnoteBlockNode = Spread<
   SerializedLexicalNode
 >;
 
-export class FootnoteBlockNode extends DecoratorNode<React.ReactNode> {
+export class FootnoteBlockNode extends DecoratorNode<unknown> {
   __referenceId?: string;
   __order: number;
   __blockNote: LexicalEditor;
@@ -200,7 +196,7 @@ export class FootnoteBlockNode extends DecoratorNode<React.ReactNode> {
   }
   setReferenceId(referenceId: string): this {
     const self = this.getWritable();
-    self.__referenceId = referenceId;
+    this.__referenceId = referenceId;
     return self;
   }
 
@@ -210,7 +206,7 @@ export class FootnoteBlockNode extends DecoratorNode<React.ReactNode> {
   }
   setOrder(order: number): this {
     const self = this.getWritable();
-    self.__order = order;
+    this.__order = order;
     return self;
   }
 
@@ -342,7 +338,7 @@ export class FootnoteBlockNode extends DecoratorNode<React.ReactNode> {
 
   exportJSON(): SerializedFootnoteBlockNode {
     if (!this.__referenceId) {
-      throw new Error("Node ID is required");
+      throw new Error("Reference ID is required");
     }
     const order = this.getOrder();
     if (!order) {
@@ -354,26 +350,6 @@ export class FootnoteBlockNode extends DecoratorNode<React.ReactNode> {
       referenceId: this.__referenceId,
       order: order,
     };
-  }
-  component(): ComponentType<BlockComponentProps> | null {
-    return FootnoteBlockComponent;
-  }
-
-  decorate(editor: LexicalEditor, config: EditorConfig): React.ReactNode {
-    const Component = this.component();
-    if (!Component) return null;
-    const referenceId = this.getReferenceId();
-    const order = this.getOrder();
-    const classes = getBlockClasses(config);
-    return (
-      <Component
-        nodeKey={this.getKey()}
-        referenceId={referenceId}
-        order={order}
-        blockNote={this.__blockNote}
-        classNames={classes}
-      />
-    );
   }
 }
 
@@ -413,3 +389,4 @@ export const $isFootnoteBlockNode = (
 ): node is FootnoteBlockNode => {
   return node instanceof FootnoteBlockNode;
 };
+

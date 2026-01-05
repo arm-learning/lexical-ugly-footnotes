@@ -5,26 +5,13 @@ import {
 	type DOMConversionOutput,
 	type DOMExportOutput,
 	type EditorConfig,
-	type LexicalEditor,
 	type LexicalNode,
 	type NodeKey,
 	type SerializedLexicalNode,
 	type Spread,
 } from "lexical";
-import { footnoteService } from "../core/index.js";
-import FootnoteReferenceComponent from "../components/ReferenceComponent.js";
-import { REFERENCE_ATTR, REFERENCE_CLASS, REFERENCE_TYPE } from "../constants/reference.js";
-import type { ComponentType } from "react";
-import type { ReferenceComponentProps } from "../types/reference.js";
-import { getReferenceClasses } from "../theme/index.js";
-
-// export const PLUGIN_TYPE_FOOTNOTE_REFERENCE = "footnote-reference";
-
-// export const REFERENCE_ATTR = {
-// 	container: `data-${PLUGIN_TYPE_FOOTNOTE_REFERENCE}-container`,
-// 	referenceId: `data-${PLUGIN_TYPE_FOOTNOTE_REFERENCE}-reference-id`,
-// 	order: `data-${PLUGIN_TYPE_FOOTNOTE_REFERENCE}-order`,
-// };
+import { footnoteService } from "../shared/service.js";
+import { REFERENCE_ATTR, REFERENCE_CLASS, REFERENCE_TYPE } from "../shared/constants/reference.js";
 
 export type SerializedFootnoteReferenceNode = Spread<
 	{
@@ -62,7 +49,7 @@ const convertFootnoteReferenceElement = (
 	return null;
 };
 
-export class FootnoteReferenceNode extends DecoratorNode<React.ReactNode> {
+export class FootnoteReferenceNode extends DecoratorNode<unknown> {
 	__reference_id: string | null;
 	__order: number | null;
 	constructor(
@@ -229,46 +216,6 @@ export class FootnoteReferenceNode extends DecoratorNode<React.ReactNode> {
 			order: this.__order,
 		};
 	}
-
-	component(): ComponentType<ReferenceComponentProps> | null {
-		return FootnoteReferenceComponent;
-	}
-
-
-	decorate(editor: LexicalEditor, config: EditorConfig): React.ReactNode {
-		// const referenceId = this.getReferenceId();
-		// // if (!referenceId) {
-		// // 	throw new Error("Reference ID is required");
-		// // }
-		// const order = this.getOrder();
-		// // if (typeof order !== "number" || Number.isNaN(order)) {
-		// // 	throw new Error("Order is required");
-		// // }
-		// return (
-		// 	<>
-		// 		<FootnoteReferenceComponent
-		// 			referenceId={referenceId}
-		// 			nodeKey={this.getKey()}
-		// 			order={order}
-		// 		/>
-		// 	</>
-		// );
-		const Component = this.component();
-		if (!Component) return null;
-
-		const referenceId = this.getReferenceId();
-		const order = this.getOrder();
-		const classes = getReferenceClasses(config);
-
-		return (
-			<Component
-				referenceId={referenceId}
-				nodeKey={this.getKey()}
-				order={order}
-				classNames={classes}
-			/>
-		);
-	}
 }
 
 let ReferenceNodeClass: typeof FootnoteReferenceNode = FootnoteReferenceNode;
@@ -296,3 +243,4 @@ export const $isFootnoteReferenceNode = (
 ): node is FootnoteReferenceNode => {
 	return node instanceof FootnoteReferenceNode;
 };
+

@@ -1,8 +1,8 @@
 import { $dfs } from "@lexical/utils";
 import { $getNodeByKey, $getRoot } from "lexical";
 import { footnoteService } from "./index.js";
-import { FootnoteBlockNode } from "../nodes/BlockNode.js";
-import { FootnoteReferenceNode } from "../nodes/ReferenceNode.js";
+import { FootnoteBlockNode } from "../nodes/BlockNode.server.js";
+import { FootnoteReferenceNode } from "../nodes/ReferenceNode.server.js";
 import { $syncFootnotesInParent } from "./index.js";
 
 export function $removeFootnoteById(referenceId: string) {

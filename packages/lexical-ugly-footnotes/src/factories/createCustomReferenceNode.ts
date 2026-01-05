@@ -1,8 +1,8 @@
 import type { ComponentType } from "react";
-import { FootnoteReferenceNode, registerReferenceNodeClass, type SerializedFootnoteReferenceNode } from "../nodes/ReferenceNode.js";
+import { FootnoteReferenceNode, registerReferenceNodeClass, type SerializedFootnoteReferenceNode } from "../nodes/ReferenceNode.client.js";
 import type { ReferenceComponentProps } from "../types/reference.js";
 import type { LexicalEditor, LexicalNodeReplacement } from "lexical";
-import { REFERENCE_TYPE } from "../constants/reference.js";
+import { REFERENCE_TYPE } from "../shared/constants/reference.js";
 
 export type CustomReferenceNodeClass = typeof FootnoteReferenceNode;
 
