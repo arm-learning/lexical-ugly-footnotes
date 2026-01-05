@@ -26,11 +26,11 @@ export const SharedHistoryContext = ({
 
 export const useSharedHistoryState =
 	(): SharedHistoryStateContext => {
-        const context = useContext(Context);
-        if (!context) {
-            throw new Error(
-                "useSharedHistoryState must be used within a SharedHistoryContext provider"
-            );
-        }
-        return context;
+		const context = useContext(Context);
+		if (!context) {
+			throw new Error(
+				"useSharedHistoryState must be used within a SharedHistoryContext provider"
+			);
+		}
+		return context;
 	};

@@ -38,7 +38,7 @@ export function Editor({ submitHandler, content }: EditorProps) {
     namespace: "MyEditor",
     theme,
     onError,
-    nodes: [HeadingNode,FootnoteBlockNode, FootnoteReferenceNode, FootnoteLineBreakNode],
+    nodes: [HeadingNode, FootnoteBlockNode, FootnoteReferenceNode, FootnoteLineBreakNode],
     editorState: (editor) => {
       console.log({ content });
       if (content && content[0] === '<') {
@@ -100,7 +100,6 @@ export function Editor({ submitHandler, content }: EditorProps) {
         </SharedHistoryContext>
       </LexicalComposer>
       <button type="submit">Submit</button>
-      <a href="/custom">Custom</a>
     </form>
   );
 }

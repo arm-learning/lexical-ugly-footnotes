@@ -10,8 +10,12 @@
     "check-types": "next typegen && tsc --noEmit"
   },
   "dependencies": {
+    "@lexical/headless": "catalog:",
+    "@lexical/html": "catalog:",
     "@lexical/react": "catalog:",
+    "@lexical/rich-text": "catalog:",
     "@lexical/utils": "catalog:",
+    "@repo/store": "workspace:*",
     "@repo/ui": "workspace:*",
     "lexical": "catalog:",
     "lexical-ugly-footnotes": "workspace:*",
