@@ -1,5 +1,8 @@
 "use client";
-import { LexicalComposer, type InitialConfigType } from "@lexical/react/LexicalComposer";
+import {
+  LexicalComposer,
+  type InitialConfigType,
+} from "@lexical/react/LexicalComposer";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
@@ -13,35 +16,38 @@ import {
 } from "lexical-ugly-footnotes";
 import { EditorRefPlugin } from "@lexical/react/LexicalEditorRefPlugin";
 import FootnoteButton from "./components/FootnoteButton.js";
-import FootnoteHotkeyPlugin from "./components/FootnoteHotkeyPlugin.js";
 import { useRef } from "react";
 import { $createTextNode, $getRoot, type LexicalEditor } from "lexical";
 import { $createHeadingNode, HeadingNode } from "@lexical/rich-text";
 import { $generateNodesFromDOM } from "@lexical/html";
 
-interface EditorProps {
+interface EditorShowcaseDefaultProps {
   submitHandler: (editor: LexicalEditor) => void;
   content: string | null;
-  // jsonContent?: string;
 }
+
 const theme = {
-  // Theme styling goes here
+  // Default theme - no custom styling
 };
 
 function onError(error: Error) {
   console.error(error);
 }
 
-export function Editor({ submitHandler, content }: EditorProps) {
+export function EditorShowcaseDefault({ submitHandler, content }: EditorShowcaseDefaultProps) {
   const editorRef = useRef<LexicalEditor | null>(null);
   const initialConfig = {
-    namespace: "MyEditor",
+    namespace: "Showcase-Default",
     theme,
     onError,
-    nodes: [HeadingNode, FootnoteBlockNode, FootnoteReferenceNode, FootnoteLineBreakNode],
+    nodes: [
+      HeadingNode,
+      FootnoteBlockNode,
+      FootnoteReferenceNode,
+      FootnoteLineBreakNode,
+    ],
     editorState: (editor) => {
-      console.log({ content });
-      if (content && content[0] === '<') {
+      if (content && content[0] === "<") {
         const dom = new DOMParser();
         const document = dom.parseFromString(content, "text/html");
         const nodes = $generateNodesFromDOM(editor, document);
@@ -49,7 +55,7 @@ export function Editor({ submitHandler, content }: EditorProps) {
         root.clear();
         for (const node of nodes) {
           root.append(node);
-        };
+        }
         return;
       }
 
@@ -63,43 +69,46 @@ export function Editor({ submitHandler, content }: EditorProps) {
 
       const root = $getRoot();
       const title = $createHeadingNode("h1");
-      const titleText = $createTextNode("Welcome to the footnote editor!");
+      const titleText = $createTextNode("Default Styling");
       title.append(titleText);
       root.append(title);
-    }
+    },
   } satisfies InitialConfigType;
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        if (editorRef.current) {
-          submitHandler(editorRef.current);
-        }
-      }}
-    >
-      <LexicalComposer initialConfig={initialConfig}>
-        <SharedHistoryContext>
-          <FootnoteButton />
-          <div className="relative border rounded-md p-4 min-h-[200px]">
-            <RichTextPlugin
-              contentEditable={
-                <ContentEditable className="outline-none min-h-[150px]" />
-              }
-              // placeholder={
-              //   <div className="absolute top-4 left-4 text-gray-400 pointer-events-none">
-              //     Enter some text...
-              //   </div>
-              // }
-              ErrorBoundary={LexicalErrorBoundary}
-            />
-            <EditorRefPlugin editorRef={editorRef} />
-            <FootnotePlugin />
-            <HistoryPlugin />
-          </div>
-        </SharedHistoryContext>
-      </LexicalComposer>
-      <button type="submit">Submit</button>
-    </form>
+    <div className="showcase-editor-default">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (editorRef.current) {
+            submitHandler(editorRef.current);
+          }
+        }}
+      >
+        <LexicalComposer initialConfig={initialConfig}>
+          <SharedHistoryContext>
+            <FootnoteButton />
+            <div className="relative border rounded-md p-4 min-h-[200px]">
+              <RichTextPlugin
+                contentEditable={
+                  <ContentEditable className="outline-none min-h-[150px]" />
+                }
+                // placeholder={
+                //   <div className="absolute top-4 left-4 text-gray-400 pointer-events-none">
+                //     Enter some text...
+                //   </div>
+                // }
+                ErrorBoundary={LexicalErrorBoundary}
+              />
+              <EditorRefPlugin editorRef={editorRef} />
+              <FootnotePlugin />
+              <HistoryPlugin />
+            </div>
+          </SharedHistoryContext>
+        </LexicalComposer>
+        <button type="submit">Submit</button>
+      </form>
+    </div>
   );
 }
+

@@ -1,18 +1,23 @@
 "use client";
 
-import { Editor } from "@repo/ui";
-import { $generateHtmlFromNodes } from "@lexical/html";
-import type { LexicalEditor } from "lexical";
 import { useTransition, useState } from "react";
+import type { LexicalEditor } from "lexical";
+import { $generateHtmlFromNodes } from "@lexical/html";
 import type { SaveResult } from "../_actions/save-content";
+import type { ComponentType } from "react";
 
-interface EditorClientProps {
+interface EditorComponentProps {
+    submitHandler: (editor: LexicalEditor) => void;
     content: string | null;
-    format: "json" | "html";
-    saveAction: (content: string) => Promise<SaveResult>;
 }
 
-export function EditorClient({ content, format, saveAction }: EditorClientProps) {
+interface CustomEditorClientProps {
+    content: string | null;
+    saveAction: (content: string) => Promise<SaveResult>;
+    EditorComponent: ComponentType<EditorComponentProps>;
+}
+
+const CustomEditorClient = ({ content, saveAction, EditorComponent }: CustomEditorClientProps) => {
     const [isPending, startTransition] = useTransition();
     const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
     const [errorMessage, setErrorMessage] = useState<string>("");
@@ -21,16 +26,9 @@ export function EditorClient({ content, format, saveAction }: EditorClientProps)
         setStatus("idle");
         setErrorMessage("");
 
-        let contentToSave: string;
-
-        if (format === "json") {
-            const editorState = editor.getEditorState();
-            contentToSave = JSON.stringify(editorState.toJSON());
-        } else {
-            contentToSave = editor.read(() => {
-                return $generateHtmlFromNodes(editor, null);
-            });
-        }
+        const contentToSave = editor.read(() => {
+            return $generateHtmlFromNodes(editor, null);
+        });
 
         startTransition(async () => {
             const result = await saveAction(contentToSave);
@@ -47,7 +45,7 @@ export function EditorClient({ content, format, saveAction }: EditorClientProps)
     return (
         <div className="w-full">
             <div className="mb-4">
-                <Editor submitHandler={handleSubmit} content={content} />
+                <EditorComponent submitHandler={handleSubmit} content={content} />
             </div>
 
             <div className="flex items-center gap-4">
@@ -64,3 +62,5 @@ export function EditorClient({ content, format, saveAction }: EditorClientProps)
         </div>
     );
 }
+
+export default CustomEditorClient;

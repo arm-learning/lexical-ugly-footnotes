@@ -22,6 +22,10 @@ export async function saveAsHtml(content: string): Promise<SaveResult> {
     try {
         await memoryStore.set(content, "html");
         revalidatePath("/editor/html/preview");
+        revalidatePath("/custom/preview");
+        revalidatePath("/custom/css-vars/preview");
+        revalidatePath("/custom/theme/preview");
+        revalidatePath("/custom/override/preview");
         return { success: true };
     } catch (error) {
         console.error("Failed to save HTML:", error);

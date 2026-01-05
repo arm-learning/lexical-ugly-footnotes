@@ -2,3 +2,7 @@ export * from "./editor.js";
 export * from "./card.js";
 export * from "./editor-preview.js";
 export * from "./editor-custom.js";
+export * from "./editor-showcase-css-vars.js";
+export * from "./editor-showcase-theme.js";
+export * from "./editor-showcase-default.js";
+export * from "./editor-showcase-override.js";

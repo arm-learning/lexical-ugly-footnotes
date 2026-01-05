@@ -107,11 +107,11 @@ export function EditorCustom({ submitHandler, content }: EditorCustomProps) {
               contentEditable={
                 <ContentEditable className="outline-none min-h-[150px]" />
               }
-              placeholder={
-                <div className="absolute top-4 left-4 text-gray-400 pointer-events-none">
-                  Enter some text...
-                </div>
-              }
+              // placeholder={
+              //   <div className="absolute top-4 left-4 text-gray-400 pointer-events-none">
+              //     Enter some text...
+              //   </div>
+              // }
               ErrorBoundary={LexicalErrorBoundary}
             />
             <EditorRefPlugin editorRef={editorRef} />
