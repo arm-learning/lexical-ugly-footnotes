@@ -1,55 +1,29 @@
 import {
-	DecoratorNode,
 	type DOMConversionMap,
 	type DOMConversionOutput,
-	type DOMExportOutput,
-	type LexicalEditor,
-	type LexicalNode,
-	type LexicalUpdateJSON,
 	type NodeKey,
-	type SerializedLexicalNode,
-	type Spread,
 } from "lexical";
-import { LINE_BREAK_ATTR, LINE_BREAK_CLASS, LINE_BREAK_TYPE } from "../shared/constants/line-break.js";
+import { LINE_BREAK_ATTR } from "../shared/constants/line-break.js";
+import {
+	FootnoteLineBreakBase,
+	createConvertFootnoteLineBreakNode,
+	type SerializedFootnoteLineBreakNode,
+} from "../shared/nodes/LineBreak.base.js";
 
-export type FootnoteLineBreakNodeProps = {};
+// Re-export types from base
+export type { FootnoteLineBreakNodeProps, SerializedFootnoteLineBreakNode } from "../shared/nodes/LineBreak.base.js";
 
-export type SerializedFootnoteLineBreakNode = Spread<
-	FootnoteLineBreakNodeProps,
-	SerializedLexicalNode
->;
+// ============================================================================
+// Server Node Class
+// ============================================================================
 
-export const convertFootnoteLineBreakNode = (
-	_domNode: HTMLDivElement,
-): DOMConversionOutput | null => {
-	const node = $createFootnoteLineBreakNode();
-	return {
-		node,
-	};
-};
-
-export class FootnoteLineBreakNode extends DecoratorNode<unknown> {
+export class FootnoteLineBreakNode extends FootnoteLineBreakBase<null> {
 	constructor(key?: NodeKey) {
 		super(key);
 	}
 
-	static getType(): string {
-		return LINE_BREAK_TYPE;
-	}
-
 	static clone(node: FootnoteLineBreakNode): FootnoteLineBreakNode {
 		return new FootnoteLineBreakNode(node.__key);
-	}
-
-	createDOM(): HTMLElement {
-		const div = document.createElement("div");
-		div.setAttribute(LINE_BREAK_ATTR.container, "");
-		div.classList.add(LINE_BREAK_CLASS.container);
-		return div;
-	}
-
-	updateDOM(): boolean {
-		return false;
 	}
 
 	static importDOM(): DOMConversionMap<HTMLDivElement> | null {
@@ -70,45 +44,22 @@ export class FootnoteLineBreakNode extends DecoratorNode<unknown> {
 		return $createFootnoteLineBreakNode().updateFromJSON(json);
 	}
 
-	updateFromJSON(
-		serializedNode: LexicalUpdateJSON<SerializedFootnoteLineBreakNode>,
-	): this {
-		return super.updateFromJSON(serializedNode);
-	}
-
-	exportDOM(): DOMExportOutput {
-		const element = document.createElement("div");
-		element.setAttribute(LINE_BREAK_ATTR.container, "");
-		element.classList.add(LINE_BREAK_CLASS.container);
-		element.setAttribute("data-lexical-decorator", "true");
-
-		const lineBreak = document.createElement("div");
-		lineBreak.classList.add(LINE_BREAK_CLASS.base);
-		element.appendChild(lineBreak);
-
-		return { element };
-	}
-
-	override exportJSON(): SerializedFootnoteLineBreakNode {
-		return {
-			...super.exportJSON(),
-		};
+	decorate(): null {
+		return null;
 	}
 }
 
-let LineBreakNodeClass: typeof FootnoteLineBreakNode = FootnoteLineBreakNode;
+// ============================================================================
+// Server-specific helpers
+// ============================================================================
 
-export const registerLineBreakNodeClass = (klass: typeof FootnoteLineBreakNode) => {
-	LineBreakNodeClass = klass;
-}
+export const convertFootnoteLineBreakNode = createConvertFootnoteLineBreakNode(
+	() => $createFootnoteLineBreakNode(),
+);
+
 export const $createFootnoteLineBreakNode = (): FootnoteLineBreakNode => {
-	// return new FootnoteLineBreakNode();
-	return new LineBreakNodeClass();
+	return new FootnoteLineBreakNode();
 };
 
-export const $isFootnoteLineBreakNode = (
-	node: LexicalNode | null,
-): node is FootnoteLineBreakNode => {
-	return node instanceof FootnoteLineBreakNode;
-};
-
+// Re-export $isFootnoteLineBreakNode from base
+export { $isFootnoteLineBreakNode } from "../shared/nodes/LineBreak.base.js";

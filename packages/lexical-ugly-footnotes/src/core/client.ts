@@ -1,5 +1,7 @@
+import { $dfs } from "@lexical/utils";
 import {
 	$getChildCaretOrSelf,
+	$getNodeByKey,
 	$getRoot,
 	$getSiblingCaret,
 	type CaretDirection,
@@ -8,9 +10,138 @@ import {
 	type NodeCaret,
 } from "lexical";
 import { REMOVE_FOOTNOTE_REFERENCE_NODE_BY_REFERENCE_ID_COMMAND, UPDATE_FOOTNOTE_ORDERS_COMMAND } from "../plugins/NestedFootnotePlugin.js";
-import { FootnoteReferenceNode } from "../nodes/ReferenceNode.server.js";
+// Import from CLIENT nodes (for node creation)
+import { FootnoteReferenceNode } from "../nodes/ReferenceNode.client.js";
+import { $createFootnoteBlockNode, FootnoteBlockNode } from "../nodes/BlockNode.client.js";
+import { $createFootnoteLineBreakNode, type FootnoteLineBreakNode } from "../nodes/LineBreakNode.client.js";
+// Import from base for type guards
+import { $isFootnoteLineBreakNode } from "../shared/nodes/LineBreak.base.js";
 import { footnoteService } from "../shared/service.js";
 import { isContainerNode, containerConfig } from "./index.js";
+
+// ============================================================================
+// Functions that CREATE nodes (client-only)
+// ============================================================================
+
+export function $reorderFootnoteBlocksFromService(): void {
+	const root = $getRoot();
+
+	const ids = footnoteService.getDocOrderIds();
+	// If no footnotes: remove delimiter + all blocks and bail
+	if (ids.length === 0) {
+		const delim = root.getChildren().find($isFootnoteLineBreakNode);
+		if (delim) delim.remove();
+		for (const { node } of $dfs(root)) {
+			if (node instanceof FootnoteBlockNode) node.remove();
+		}
+		return;
+	}
+
+	// Ensure delimiter exists
+	let delim = root.getChildren().find($isFootnoteLineBreakNode) as
+		| FootnoteLineBreakNode
+		| undefined;
+	if (!delim) {
+		delim = $createFootnoteLineBreakNode();
+		root.append(delim);
+	}
+
+	// Index any existing blocks by id BEFORE removing them
+	const byId = new Map<string, FootnoteBlockNode>();
+	const dupBuckets = new Map<string, FootnoteBlockNode[]>();
+	for (const { node } of $dfs(root)) {
+		if (node instanceof FootnoteBlockNode) {
+			const id = node.getReferenceId();
+			if (!id) continue;
+			const first = byId.get(id);
+			if (!first) byId.set(id, node);
+			else {
+				// collect duplicates to remove after
+				const arr = dupBuckets.get(id) ?? [];
+				arr.push(node);
+				dupBuckets.set(id, arr);
+			}
+		}
+	}
+
+	// Remove ALL block nodes from the tree (kept instances live in byId)
+	for (const { node } of $dfs(root)) {
+		if (node instanceof FootnoteBlockNode) node.remove();
+	}
+
+	// Also remove duplicates we saw
+	for (const arr of dupBuckets.values()) {
+		for (const dup of arr) dup.remove();
+	}
+
+	// Reinsert in authoritative order
+	let cursor: FootnoteLineBreakNode | FootnoteBlockNode = delim!;
+	ids.forEach((id, idx) => {
+		const order = idx + 1;
+		const node = byId.get(id) ?? $createFootnoteBlockNode(id, order);
+		node.setOrder(order); // ensure node.order matches service
+		cursor.insertAfter(node); // attaches (or moves) the node
+		cursor = node;
+	});
+}
+
+let _isSyncing = false;
+
+export function $syncFootnotesInParent(): void {
+	if (_isSyncing) return;
+	_isSyncing = true;
+	try {
+		$reorderFootnoteBlocksFromService();
+
+		const allowed = new Set(footnoteService.getDocOrderIds());
+		footnoteService.pruneToIds(allowed);
+	} finally {
+		_isSyncing = false;
+	}
+}
+
+export function $removeFootnoteById(referenceId: string) {
+	// 1) Remove nodes from the document (both block and all refs with this id)
+	for (const { node } of $dfs($getRoot())) {
+		if (
+			(node instanceof FootnoteBlockNode ||
+				node instanceof FootnoteReferenceNode) &&
+			node.getReferenceId?.() === referenceId
+		) {
+			node.remove();
+		}
+	}
+
+	// 2) Update the service (this also shifts/renumbers its index)
+	footnoteService.removeRefAndBlock(referenceId);
+
+	// 3) Rebuild index & reflow blocks from the remaining refs
+	$syncFootnotesInParent();
+}
+
+export function $removeFootnoteByBlockNodeKey(blockNodeKey: string) {
+	const block = $getNodeByKey(blockNodeKey) as FootnoteBlockNode | null;
+	const id = block?.getReferenceId?.();
+	if (id) $removeFootnoteById(id);
+}
+
+export function $removeFootnoteByBlockNodeKeyTwo(blockNodeKey: string) {
+	const block = $getNodeByKey(blockNodeKey) as FootnoteBlockNode | null;
+	const id = block?.getReferenceId?.();
+	if (!id) return;
+	footnoteService.removeRefAndBlock(id);
+	$removeFootnoteById(id);
+}
+
+export function $removeFootnoteByRefNodeKey(refNodeKey: string) {
+	const ref = $getNodeByKey(refNodeKey) as FootnoteReferenceNode | null;
+	const id = ref?.getReferenceId?.();
+	if (id) $removeFootnoteById(id);
+}
+
+// ============================================================================
+// Functions that traverse and update orders (client-only, uses commands)
+// ============================================================================
 
 export function $reorderAllReferencesFromService(): void {
 	const root = $getRoot();
@@ -51,45 +182,11 @@ export function $reorderAllReferencesFromService(): void {
 			}
 		}
 
-		// Found a nested editor (Frame)
-		// if (nodeAt instanceof FrameNode) {
-		// 	const frame = nodeAt.getFrame();
+		// Found a nested editor (container)
 		if (isContainerNode(nodeAt)) {
 			const containerEditor = containerConfig?.getNestedEditor?.(nodeAt);
 			if (!containerEditor) continue;
 			containerEditor.dispatchCommand(UPDATE_FOOTNOTE_ORDERS_COMMAND, undefined);
-			// frame.getEditorState().read(() => {
-			//     const childRoot = $getRoot();
-
-			//     // Recursively traverse the nested editor
-			//     let childCaret: NodeCaret<"next"> | null = $getChildCaretOrSelf(
-			//         $getSiblingCaret(childRoot, "next")
-			//     );
-
-			//     function childStep<D extends CaretDirection>(
-			//         currentCaret: NodeCaret<D>,
-			//     ): null | NodeCaret<D> {
-			//         const nextCaret = currentCaret.getAdjacentCaret();
-			//         return (
-			//             nextCaret?.getChildCaret() ||
-			//             nextCaret ||
-			//             currentCaret.getParentCaret("root")
-			//         );
-			//     }
-
-			//     // Traverse the nested editor
-			//     for (; childCaret !== null; childCaret = childStep(childCaret)) {
-			//         const childNodeAt = childCaret.getNodeAtCaret();
-			//         if (!childNodeAt) continue;
-
-			//         if (childNodeAt instanceof FootnoteReferenceNode) {
-			//             const referenceId = childNodeAt.getReferenceId();
-			//             if (!referenceId) continue;
-			//             const idx = footnoteService.indexOf(referenceId);
-			//             if (idx !== undefined) childNodeAt.setOrder(idx + 1);
-			//         }
-			//     }
-			// });
 		}
 	}
 }
@@ -125,16 +222,13 @@ export function $removeFootnoteReferenceNodeByReferenceId(
 		// Found a footnote reference
 		if (nodeAt instanceof FootnoteReferenceNode) {
 			const referenceId = nodeAt.getReferenceId();
-			// if (!referenceId) continue;
 
 			if (referenceId === targetReferenceId) {
 				nodeAt.remove();
 			}
 		}
 
-		// Found a nested editor (Frame)
-		// if (nodeAt instanceof FrameNode) {
-		// 	const frame = nodeAt.getFrame();
+		// Found a nested editor (container)
 		if (isContainerNode(nodeAt)) {
 			const containerEditor = containerConfig?.getNestedEditor?.(nodeAt);
 			if (!containerEditor) continue;
@@ -142,39 +236,6 @@ export function $removeFootnoteReferenceNodeByReferenceId(
 				REMOVE_FOOTNOTE_REFERENCE_NODE_BY_REFERENCE_ID_COMMAND,
 				targetReferenceId,
 			);
-			// frame.getEditorState().read(() => {
-			//     const childRoot = $getRoot();
-
-			//     // Recursively traverse the nested editor
-			//     let childCaret: NodeCaret<"next"> | null = $getChildCaretOrSelf(
-			//         $getSiblingCaret(childRoot, "next")
-			//     );
-
-			//     function childStep<D extends CaretDirection>(
-			//         currentCaret: NodeCaret<D>,
-			//     ): null | NodeCaret<D> {
-			//         const nextCaret = currentCaret.getAdjacentCaret();
-			//         return (
-			//             nextCaret?.getChildCaret() ||
-			//             nextCaret ||
-			//             currentCaret.getParentCaret("root")
-			//         );
-			//     }
-
-			//     // Traverse the nested editor
-			//     for (; childCaret !== null; childCaret = childStep(childCaret)) {
-			//         const childNodeAt = childCaret.getNodeAtCaret();
-			//         if (!childNodeAt) continue;
-
-			//         if (childNodeAt instanceof FootnoteReferenceNode) {
-			//             const referenceId = childNodeAt.getReferenceId();
-			//             if (!referenceId) continue;
-			//             const idx = footnoteService.indexOf(referenceId);
-			//             if (idx !== undefined) childNodeAt.setOrder(idx + 1);
-			//         }
-			//     }
-			// });
 		}
 	}
 }
-

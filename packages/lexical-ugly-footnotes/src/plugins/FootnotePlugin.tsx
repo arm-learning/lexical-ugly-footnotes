@@ -21,8 +21,13 @@ import {
 import { useEffect } from "react";
 import { $createFootnoteBlockNode, FootnoteBlockNode } from "../nodes/BlockNode.client.js";
 import { $createFootnoteReferenceNode, FootnoteReferenceNode } from "../nodes/ReferenceNode.client.js";
-import { $mirrorOrdersFromServiceIntoCurrentEditor, $nextFootnoteOrderWithIndex, $removeFootnoteByRefNodeKey, $reorderFootnoteBlocksFromService, $syncFootnotesInParent, footnoteService } from "../core/index.js";
-import { $reorderAllReferencesFromService } from "../core/client.js";
+import { $mirrorOrdersFromServiceIntoCurrentEditor, $nextFootnoteOrderWithIndex, footnoteService } from "../core/index.js";
+import {
+	$removeFootnoteByRefNodeKey,
+	$reorderFootnoteBlocksFromService,
+	$syncFootnotesInParent,
+	$reorderAllReferencesFromService,
+} from "../core/client.js";
 import { v7 as uuidv7 } from "uuid";
 import { $createFootnoteLineBreakNode, $isFootnoteLineBreakNode } from "../nodes/LineBreakNode.client.js";
 
