@@ -9,14 +9,9 @@ import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
 import type { LexicalEditor, NodeKey } from "lexical";
 import {
-	FootnoteBlockNode,
-	FootnoteLineBreakNode,
-	FootnotePlugin,
-	FootnoteReferenceNode,
 	NestedFootnotePlugin,
 	SharedHistoryContext,
 } from "lexical-ugly-footnotes/client";
-import FootnoteButton from "./FootnoteButton.js";
 import { $getRoot, $createTextNode, $createParagraphNode } from "lexical";
 import { useEffect, useRef } from "react";
 
@@ -78,7 +73,6 @@ const NestedFootnoteDemoComponent = ({
 								</div>
 							}
 						/>
-						<FootnotePlugin />
 						<NestedFootnotePlugin editor={editor} nodeKey={nodeKey} />
 						<HistoryPlugin />
 					</div>

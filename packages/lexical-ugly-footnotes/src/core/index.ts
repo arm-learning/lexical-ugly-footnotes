@@ -93,7 +93,8 @@ export const isContainerNode = <TContainer extends LexicalNode>(node: LexicalNod
 /** next order computed from the nearest previous ref using the index */
 export function $nextFootnoteOrderWithIndex(anchorNode: LexicalNode): number {
 	const prev = $findPrevFootnoteRefWithNodeCaret(anchorNode);
-	return footnoteService.nextOrderAfter(prev ?? null);
+	const order = footnoteService.nextOrderAfter(prev ?? null);
+	return order;
 }
 
 export function $findPrevFootnoteRefWithNodeCaret(
@@ -128,6 +129,7 @@ export function $findPrevFootnoteRefWithNodeCaret(
 		if (nodeAt instanceof FootnoteReferenceBase) {
 			return nodeAt.getReferenceId();
 		}
+		
 		if (isContainerNode(nodeAt)) {
 			const containerEditor = containerConfig?.getNestedEditor?.(nodeAt);
 			if (!containerEditor) continue;

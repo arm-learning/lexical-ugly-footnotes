@@ -15,13 +15,15 @@ import {
 	KEY_BACKSPACE_COMMAND,
 	KEY_DELETE_COMMAND,
 	type LexicalCommand,
+	type LexicalEditor,
+	type LexicalNode,
 	ParagraphNode,
 	type TextNode,
 } from "lexical";
 import { useEffect } from "react";
 import { $createFootnoteBlockNode, FootnoteBlockNode } from "../nodes/BlockNode.client.js";
 import { $createFootnoteReferenceNode, FootnoteReferenceNode } from "../nodes/ReferenceNode.client.js";
-import { $mirrorOrdersFromServiceIntoCurrentEditor, $nextFootnoteOrderWithIndex, footnoteService } from "../core/index.js";
+import { $mirrorOrdersFromServiceIntoCurrentEditor, $nextFootnoteOrderWithIndex, configureFootnoteContainer, footnoteService } from "../core/index.js";
 import {
 	$removeFootnoteByRefNodeKey,
 	$reorderFootnoteBlocksFromService,
@@ -43,9 +45,49 @@ const $findPreviousFootnoteBeforeCursor = (
 	anchorNode: TextNode | ParagraphNode | ElementNode,
 ) => {};
 
-export const FootnotePlugin = () => {
+interface FootnotePluginProps {
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	containerNodeClass?: new (...args: any[]) => LexicalNode;
+	getNestedEditor?: (node: LexicalNode) => LexicalEditor | null;
+}
+/**
+ * FootnotePlugin - Manages footnote references and blocks in a Lexical editor.
+ * 
+ * **IMPORTANT**: This plugin should ONLY be registered in the top-level/root editor,
+ * NOT in nested editors (e.g., inside LexicalNestedComposer).
+ * 
+ * For nested editors, use NestedFootnotePlugin instead.
+ * 
+ * @example
+ * 
+ * // ✅ Correct - in root editor
+ * <LexicalComposer>
+ *   <FootnotePlugin />
+ * </LexicalComposer>
+ * 
+ * // ❌ Wrong - in nested editor
+ * <LexicalNestedComposer>
+ *   <FootnotePlugin /> // Don't do this!
+ * </LexicalNestedComposer>
+ *  * 
+ * @param containerNodeClass - Optional: The class of container nodes that contain nested editors
+ * @param getNestedEditor - Optional: Function to extract nested editor from container nodes
+ */
+export const FootnotePlugin = ({
+	containerNodeClass,
+	getNestedEditor,
+}: FootnotePluginProps) => {
 	const [editor] = useLexicalComposerContext();
 
+	useEffect(() => {
+		if (containerNodeClass && getNestedEditor) {
+			configureFootnoteContainer({
+				containerNodeClass,
+				getNestedEditor,
+			});
+		}
+	}, [containerNodeClass, getNestedEditor]);
+	
 	useEffect(() => {
 		if (!editor.hasNodes([FootnoteBlockNode, FootnoteReferenceNode])) {
 			throw new Error(

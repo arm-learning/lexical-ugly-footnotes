@@ -141,7 +141,15 @@ export function EditorShowcaseNested({
 								ErrorBoundary={LexicalErrorBoundary}
 							/>
 							<EditorRefPlugin editorRef={editorRef} />
-							<FootnotePlugin />
+							<FootnotePlugin 
+								containerNodeClass={NestedFootnoteDemoNode}
+								getNestedEditor={(node) => {
+									if (node instanceof NestedFootnoteDemoNode) {
+										return node.getNestedEditor();
+									}
+									return null;
+								}}
+							/>
 							<HistoryPlugin />
 						</div>
 					</SharedHistoryContext>
