@@ -32,6 +32,7 @@
     "@lexical/utils": "catalog:",
     "@lexical/rich-text": "catalog:",
     "@lexical/html": "catalog:",
+    "@lexical/link": "catalog:",
     "@repo/tailwind-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@tailwindcss/cli": "catalog:",

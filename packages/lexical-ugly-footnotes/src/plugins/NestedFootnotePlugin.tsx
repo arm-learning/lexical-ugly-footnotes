@@ -34,7 +34,7 @@ export const UPDATE_FOOTNOTE_ORDERS_COMMAND: LexicalCommand<void> =
 export const REMOVE_FOOTNOTE_REFERENCE_NODE_BY_REFERENCE_ID_COMMAND: LexicalCommand<string> =
 	createCommand();
 
-const NestedFootnotePlugin = ({
+export const NestedFootnotePlugin = ({
 	editor,
 	nodeKey,
 }: NestedFootnotePluginProps) => {

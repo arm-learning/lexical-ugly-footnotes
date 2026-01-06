@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 
-export default function CustomPage() {
+export default function EditorPage() {
     redirect("/demo");
 }
+

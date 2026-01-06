@@ -9,52 +9,94 @@ export interface StoreContent {
 }
 
 class MemoryStore {
-  private content: StoreContent;
+  private content: Record<string, StoreContent>;
   private delay: number;
 
   constructor(delay = 300) {
     this.delay = delay;
-    this.content = {
-      json: JSON.stringify(DEFAULT_JSON_STATE),
-      html: DEFAULT_HTML_CONTENT
-    };
+    this.content = {};
   }
 
-  // Get content in specific format
-  async get(format: ContentFormat = 'json'): Promise<string> {
-    await this.simulateDelay();
-    return this.content[format];
+  private ensureDemoType(demoType: string): void {
+    if (!this.content[demoType]) {
+      this.content[demoType] = {
+        json: JSON.stringify(DEFAULT_JSON_STATE),
+        html: DEFAULT_HTML_CONTENT
+      };
+    }
   }
 
-  // Set content in specific format
-  async set(content: string, format: ContentFormat = 'json'): Promise<void> {
-    await this.simulateDelay();
-    this.content[format] = content;
-  }
-
-  // Get both formats at once (useful for testing)
-  async getAll(): Promise<StoreContent> {
-    await this.simulateDelay();
-    return { ...this.content };
-  }
-
-  // Set both formats at once
-  async setAll(content: StoreContent): Promise<void> {
-    await this.simulateDelay();
-    this.content = { ...content };
-  }
-
-  // Reset to defaults
-  async reset(format?: ContentFormat): Promise<void> {
+  // Get content in specific format for a demo type
+  // Supports both new API: get(demoType, format) and old API: get(format)
+  async get(demoTypeOrFormat?: string, format?: ContentFormat): Promise<string> {
     await this.simulateDelay();
     
+    // Backward compatibility: if first arg is 'json' or 'html', treat it as format
+    let demoType: string;
+    let actualFormat: ContentFormat;
+    
+    if (demoTypeOrFormat === 'json' || demoTypeOrFormat === 'html') {
+      // Old API: get(format)
+      demoType = 'default';
+      actualFormat = demoTypeOrFormat as ContentFormat;
+    } else {
+      // New API: get(demoType, format)
+      demoType = demoTypeOrFormat || 'default';
+      actualFormat = format || 'json';
+    }
+    
+    this.ensureDemoType(demoType);
+    return this.content[demoType][actualFormat];
+  }
+
+  // Set content in specific format for a demo type
+  // Supports both new API: set(content, demoType, format) and old API: set(content, format)
+  async set(content: string, demoTypeOrFormat?: string, format?: ContentFormat): Promise<void> {
+    await this.simulateDelay();
+    
+    // Backward compatibility: if second arg is 'json' or 'html', treat it as format
+    let demoType: string;
+    let actualFormat: ContentFormat;
+    
+    if (demoTypeOrFormat === 'json' || demoTypeOrFormat === 'html') {
+      // Old API: set(content, format)
+      demoType = 'default';
+      actualFormat = demoTypeOrFormat as ContentFormat;
+    } else {
+      // New API: set(content, demoType, format)
+      demoType = demoTypeOrFormat || 'default';
+      actualFormat = format || 'json';
+    }
+    
+    this.ensureDemoType(demoType);
+    this.content[demoType][actualFormat] = content;
+  }
+
+  // Get both formats at once for a demo type (useful for testing)
+  async getAll(demoType: string = 'default'): Promise<StoreContent> {
+    await this.simulateDelay();
+    this.ensureDemoType(demoType);
+    return { ...this.content[demoType] };
+  }
+
+  // Set both formats at once for a demo type
+  async setAll(content: StoreContent, demoType: string = 'default'): Promise<void> {
+    await this.simulateDelay();
+    this.content[demoType] = { ...content };
+  }
+
+  // Reset to defaults for a demo type
+  async reset(demoType: string = 'default', format?: ContentFormat): Promise<void> {
+    await this.simulateDelay();
+    this.ensureDemoType(demoType);
+    
     if (format) {
-      this.content[format] = format === 'json' 
+      this.content[demoType][format] = format === 'json' 
         ? JSON.stringify(DEFAULT_JSON_STATE)
         : DEFAULT_HTML_CONTENT;
     } else {
       // Reset both
-      this.content = {
+      this.content[demoType] = {
         json: JSON.stringify(DEFAULT_JSON_STATE),
         html: DEFAULT_HTML_CONTENT
       };
