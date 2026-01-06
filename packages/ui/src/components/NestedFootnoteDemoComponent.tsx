@@ -54,22 +54,19 @@ const NestedFootnoteDemoComponent = ({
 
 	return (
 		<div
-			className={`nested-footnote-demo-wrapper border-2 border-dashed border-blue-300 rounded-lg p-4 my-4 bg-blue-50/30 ${
-				isSelected ? "ring-2 ring-blue-500" : ""
+			className={`nested-footnote-demo-wrapper border-2 border-dashed border-blue-400 rounded-lg p-4 my-4 bg-gradient-to-br from-blue-50/50 to-indigo-50/30 shadow-sm ${
+				isSelected ? "ring-2 ring-blue-500 border-blue-500" : ""
 			}`}
 		>
-			<div className="mb-2 text-sm font-semibold text-blue-700">
-				Nested Footnote Demo
+			<div className="mb-3 flex items-center gap-2">
+				<div className="text-sm font-semibold text-blue-700 bg-blue-100 px-2 py-1 rounded">
+					Nested Footnote Demo
+				</div>
+				<div className="h-px flex-1 bg-blue-200"></div>
 			</div>
 			<LexicalNestedComposer initialEditor={nestedEditor}>
 				<SharedHistoryContext>
-					<div className="flex items-center gap-2 mb-2">
-						<FootnoteButton />
-						<span className="text-xs text-gray-600">
-							Insert footnotes in this nested editor
-						</span>
-					</div>
-					<div className="relative border rounded-md p-4 min-h-[150px] bg-white">
+					<div className="relative border-2 border-blue-200 rounded-md p-4 min-h-[150px] bg-white shadow-inner">
 						<RichTextPlugin
 							contentEditable={
 								<ContentEditable className="outline-none min-h-[100px]" />

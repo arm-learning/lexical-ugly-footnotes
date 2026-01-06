@@ -33,6 +33,7 @@ const theme = {
       order: "text-sm font-bold text-purple-600",
       editor: "border-2 border-purple-400 rounded-lg p-3 bg-white",
       editorFocused: "ring-2 ring-purple-500",
+      editorStatic: "border-l-2 border-purple-400 pl-2",
     },
     reference: {
       sup: "cursor-pointer text-purple-600 font-semibold hover:text-purple-800",

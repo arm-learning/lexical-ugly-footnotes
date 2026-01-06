@@ -16,6 +16,7 @@ import {
 } from "lexical-ugly-footnotes/client";
 import { EditorRefPlugin } from "@lexical/react/LexicalEditorRefPlugin";
 import FootnoteButton from "./components/FootnoteButton.js";
+import NestedEditorButton from "./components/NestedEditorButton.js";
 import { useRef } from "react";
 import { $createTextNode, $getRoot, $createParagraphNode, type LexicalEditor } from "lexical";
 import { $createHeadingNode, HeadingNode } from "@lexical/rich-text";
@@ -128,7 +129,10 @@ export function EditorShowcaseNested({
 			>
 				<LexicalComposer initialConfig={initialConfig}>
 					<SharedHistoryContext>
-						<FootnoteButton />
+						<div className="flex items-center gap-2 mb-2">
+							<FootnoteButton />
+							<NestedEditorButton />
+						</div>
 						<div className="relative border rounded-md p-4 min-h-[200px]">
 							<RichTextPlugin
 								contentEditable={
