@@ -1,5 +1,5 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { INSERT_FOOTNOTE_BLOCK_COMMAND } from "lexical-ugly-footnotes";
+import { INSERT_FOOTNOTE_BLOCK_COMMAND } from "lexical-ugly-footnotes/client";
 import { useEffect } from "react";
 import { KEY_DOWN_COMMAND, COMMAND_PRIORITY_NORMAL } from "lexical";
 

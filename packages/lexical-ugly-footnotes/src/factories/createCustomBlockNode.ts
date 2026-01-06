@@ -1,7 +1,7 @@
 import type { ComponentType } from "react";
 import type { LexicalEditor, LexicalNodeReplacement } from "lexical";
-import { BLOCK_TYPE } from "../constants/block.js";
-import { FootnoteBlockNode, registerBlockNodeClass, type SerializedFootnoteBlockNode } from "../nodes/BlockNode.js";
+import { BLOCK_TYPE } from "../shared/constants/block.js";
+import { FootnoteBlockNode, registerBlockNodeClass, type SerializedFootnoteBlockNode } from "../nodes/BlockNode.client.js";
 import type { BlockComponentProps } from "../types/block.js";
 
 export type CustomBlockNodeClass = typeof FootnoteBlockNode;

@@ -1,4 +1,4 @@
-import { footnoteService } from "./index.js";
+import { footnoteService } from "../shared/service.js";
 
 const orderMapForExport: Map<string, number> | null = null;
 

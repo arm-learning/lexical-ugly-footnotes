@@ -19,6 +19,7 @@
     "@repo/ui": "workspace:*",
     "lexical": "catalog:",
     "lexical-ugly-footnotes": "workspace:*",
+    "linkedom": "^0.18.12",
     "next": "^16.0.8",
     "react": "catalog:",
     "react-dom": "catalog:"

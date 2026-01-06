@@ -10,7 +10,7 @@ import {
   FootnotePlugin,
   FootnoteReferenceNode,
   SharedHistoryContext,
-} from "lexical-ugly-footnotes";
+} from "lexical-ugly-footnotes/client";
 import { EditorRefPlugin } from "@lexical/react/LexicalEditorRefPlugin";
 import FootnoteButton from "./components/FootnoteButton.js";
 import FootnoteHotkeyPlugin from "./components/FootnoteHotkeyPlugin.js";

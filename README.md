@@ -1,7 +1,7 @@
 # todo
 
-- [ ] overhaul styling
-  - [ ] add navbar
-- [ ] custom theme does not have link to preview
-- [ ] fix saving and viewing on preview
 - [ ] fix styling inconsistencies on custom themes
+- [ ] add styling to nested block node
+- [ ] test nested block node can add footnotes
+- [ ] add default html to nested block view
+- [ ] add playwright tests

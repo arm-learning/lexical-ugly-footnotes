@@ -19,11 +19,17 @@ import {
 	type TextNode,
 } from "lexical";
 import { useEffect } from "react";
-import { $createFootnoteBlockNode, FootnoteBlockNode } from "../nodes/BlockNode.js";
-import { $createFootnoteReferenceNode, FootnoteReferenceNode } from "../nodes/ReferenceNode.js";
-import { $mirrorOrdersFromServiceIntoCurrentEditor, $nextFootnoteOrderWithIndex, $removeFootnoteByRefNodeKey, $reorderAllReferencesFromService, $reorderFootnoteBlocksFromService, $syncFootnotesInParent, footnoteService } from "../core/index.js";
+import { $createFootnoteBlockNode, FootnoteBlockNode } from "../nodes/BlockNode.client.js";
+import { $createFootnoteReferenceNode, FootnoteReferenceNode } from "../nodes/ReferenceNode.client.js";
+import { $mirrorOrdersFromServiceIntoCurrentEditor, $nextFootnoteOrderWithIndex, footnoteService } from "../core/index.js";
+import {
+	$removeFootnoteByRefNodeKey,
+	$reorderFootnoteBlocksFromService,
+	$syncFootnotesInParent,
+	$reorderAllReferencesFromService,
+} from "../core/client.js";
 import { v7 as uuidv7 } from "uuid";
-import { $createFootnoteLineBreakNode, $isFootnoteLineBreakNode } from "../nodes/LineBreakNode.js";
+import { $createFootnoteLineBreakNode, $isFootnoteLineBreakNode } from "../nodes/LineBreakNode.client.js";
 
 
 export const INSERT_FOOTNOTE_BLOCK_COMMAND: LexicalCommand<void> =

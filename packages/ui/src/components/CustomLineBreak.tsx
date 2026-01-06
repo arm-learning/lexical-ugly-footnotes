@@ -1,4 +1,4 @@
-import { createCustomLineBreakNode, type LineBreakComponentProps } from "lexical-ugly-footnotes";
+import { createCustomLineBreakNode, type LineBreakComponentProps } from "lexical-ugly-footnotes/client";
 
 const MyLineBreak = ({ nodeKey }: LineBreakComponentProps) => {
     

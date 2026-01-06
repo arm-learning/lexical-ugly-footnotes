@@ -9,11 +9,11 @@ import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection"
 import type { LexicalEditor, NodeKey } from "lexical";
 import { XIcon } from "lucide-react";
 import { useSharedHistoryState } from "./SharedHistoryState.js";
-import { theme } from "../nodes/BlockNode.js";
+import { theme } from "../nodes/BlockNode.server.js";
 import {
-  $removeFootnoteByBlockNodeKeyTwo,
-  $removeFootnoteReferenceNodeByReferenceId,
-} from "../core/index.js";
+	$removeFootnoteByBlockNodeKeyTwo,
+	$removeFootnoteReferenceNodeByReferenceId,
+} from "../core/client.js";
 import type { BlockComponentProps } from "../types/block.js";
 import { twMerge } from "tailwind-merge";
 

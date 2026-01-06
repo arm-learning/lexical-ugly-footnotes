@@ -1,4 +1,4 @@
-import { createCustomBlockNode, type BlockComponentProps } from "lexical-ugly-footnotes";
+import { createCustomBlockNode, type BlockComponentProps } from "lexical-ugly-footnotes/client";
 
 
 const MyBlock = ({ nodeKey, referenceId, order, blockNote }: BlockComponentProps) => (

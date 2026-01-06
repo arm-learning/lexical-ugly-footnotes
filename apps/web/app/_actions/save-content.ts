@@ -8,27 +8,34 @@ export type SaveResult = {
     error?: string;
 };
 
-export async function saveAsJson(content: string): Promise<SaveResult> {
+export type DemoType = "default" | "css-vars" | "theme" | "override" | "nested";
+
+// Unified save function
+export async function saveContent(
+    content: string,
+    demoType: DemoType = "default",
+    format: "html" | "json" = "html"
+): Promise<SaveResult> {
     try {
-        await memoryStore.set(content, "json");
+        await memoryStore.set(content, demoType, format);
+        // Revalidate preview paths for the demo type
+        if (format === "html") {
+            revalidatePath(`/demo/${demoType}/preview`);
+        } else {
+            revalidatePath(`/demo/${demoType}/preview`);
+        }
         return { success: true };
     } catch (error) {
-        console.error("Failed to save JSON:", error);
+        console.error(`Failed to save ${format} for ${demoType}:`, error);
         return { success: false, error: "Failed to save content" };
     }
 }
 
+// Backward compatibility functions (default to 'default' demo type)
+export async function saveAsJson(content: string): Promise<SaveResult> {
+    return saveContent(content, "default", "json");
+}
+
 export async function saveAsHtml(content: string): Promise<SaveResult> {
-    try {
-        await memoryStore.set(content, "html");
-        revalidatePath("/editor/html/preview");
-        revalidatePath("/custom/preview");
-        revalidatePath("/custom/css-vars/preview");
-        revalidatePath("/custom/theme/preview");
-        revalidatePath("/custom/override/preview");
-        return { success: true };
-    } catch (error) {
-        console.error("Failed to save HTML:", error);
-        return { success: false, error: "Failed to save content" };
-    }
+    return saveContent(content, "default", "html");
 }
