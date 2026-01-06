@@ -41,7 +41,7 @@ export function Editor({ submitHandler, content }: EditorProps) {
     nodes: [HeadingNode, FootnoteBlockNode, FootnoteReferenceNode, FootnoteLineBreakNode],
     editorState: (editor) => {
       console.log({ content });
-      if (content && content[0] === '<') {
+      if (content && content[0] === '<' && typeof window !== "undefined") {
         const dom = new DOMParser();
         const document = dom.parseFromString(content, "text/html");
         const nodes = $generateNodesFromDOM(editor, document);
