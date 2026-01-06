@@ -4,4 +4,5 @@
 - [ ] add styling to nested block node
 - [ ] test nested block node can add footnotes
 - [ ] add default html to nested block view
+- [ ] add customized footnote example
 - [ ] add playwright tests
