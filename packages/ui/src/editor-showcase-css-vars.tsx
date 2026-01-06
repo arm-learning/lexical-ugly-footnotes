@@ -47,7 +47,7 @@ export function EditorShowcaseCssVars({ submitHandler, content }: EditorShowcase
       FootnoteLineBreakNode,
     ],
     editorState: (editor) => {
-      if (content && content[0] === "<") {
+      if (content && content[0] === "<" && typeof window !== "undefined") {
         const dom = new DOMParser();
         const document = dom.parseFromString(content, "text/html");
         const nodes = $generateNodesFromDOM(editor, document);
