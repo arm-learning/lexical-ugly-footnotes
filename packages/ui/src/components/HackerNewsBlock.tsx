@@ -1,4 +1,4 @@
-import { createCustomBlockNode, type BlockComponentProps } from "lexical-ugly-footnotes/client";
+import { BLOCK_ATTR, createCustomBlockNode, type BlockComponentProps } from "lexical-ugly-footnotes/client";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
@@ -13,6 +13,7 @@ import {
     $removeFootnoteReferenceNodeByReferenceId,
     useSharedHistoryState,
 } from "lexical-ugly-footnotes/client";
+import { addClassNamesToElement } from "@lexical/utils";
 // Import theme from nodes (re-exported from client)
 // For Hacker News style, we use a minimal theme
 const minimalTheme = {};
@@ -86,6 +87,26 @@ const HackerNewsBlock = ({
 };
 
 // Create custom nodes (module level)
-const [HackerNewsBlockNode, hackerNewsBlockReplacement] = createCustomBlockNode(HackerNewsBlock);
+const [HackerNewsBlockNode, hackerNewsBlockReplacement] = createCustomBlockNode(
+    HackerNewsBlock,
+    {
+        createDOM: (node) => {
+            const div = document.createElement("div");
+            addClassNamesToElement(div, "hn-block-container");
+            div.setAttribute(BLOCK_ATTR.container, "");
+            const referenceId = node.getReferenceId();
+                if (referenceId) {
+                    div.setAttribute(BLOCK_ATTR.reference_id, referenceId);
+            }
+            const order = node.getOrder();
+            if (order) {
+                div.setAttribute(BLOCK_ATTR.order, order.toString());
+            }
+            // Add custom attributes
+            div.setAttribute("data-hn-style", "true");
+            return div;
+        }
+    }
+);
 export { HackerNewsBlockNode, hackerNewsBlockReplacement };
 

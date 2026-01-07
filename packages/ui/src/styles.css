@@ -8,3 +8,7 @@
     gap: 0.25rem;
     padding: 0;
 }
+
+.hn-block-container {
+    width: fit-content;
+}

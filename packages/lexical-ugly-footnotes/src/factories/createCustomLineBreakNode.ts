@@ -1,6 +1,6 @@
 import type { ComponentType } from "react";
 import { FootnoteLineBreakNode, registerLineBreakNodeClass, type SerializedFootnoteLineBreakNode } from "../nodes/LineBreakNode.client.js";
-import type { LexicalNodeReplacement } from "lexical";
+import type { LexicalNodeReplacement, DOMExportOutput, DOMConversionMap } from "lexical";
 import { LINE_BREAK_TYPE } from "../shared/constants/line-break.js";
 import type { LineBreakComponentProps } from "../types/line-break.js";
 
@@ -10,10 +10,12 @@ let CustomLineBreakNode: CustomLineBreakNodeClass
 
 export function createCustomLineBreakNode(
     lineBreakComponent: ComponentType<LineBreakComponentProps>,
+    options?: CreateDOMCustomizer,
 ): [CustomLineBreakNodeClass, LexicalNodeReplacement] {
-    CustomLineBreakNode = CustomLineBreakNode || generateClass(lineBreakComponent);
+    CustomLineBreakNode = CustomLineBreakNode || generateClass(lineBreakComponent, () => CustomLineBreakNode, options);
 
     registerLineBreakNodeClass(CustomLineBreakNode);
+    
     return [
         CustomLineBreakNode,
         {
@@ -26,11 +28,17 @@ export function createCustomLineBreakNode(
     ]
 }
 
+export type CreateDOMCustomizer = {
+    createDOM?: (node: FootnoteLineBreakNode) => HTMLElement;
+    exportDOM?: (node: FootnoteLineBreakNode) => DOMExportOutput;
+    importDOM?: (NodeClass: CustomLineBreakNodeClass) => DOMConversionMap<HTMLDivElement> | null;
+};
+
 function generateClass(
     lineBreakComponent: ComponentType<LineBreakComponentProps>,
+    getNodeClass: () => CustomLineBreakNodeClass,
+    options?: CreateDOMCustomizer,
 ) {
-    console.log("🎉 createCustomLineBreakNode rendered!");
-    console.log({lineBreakComponent})
     return class CustomFootnoteLineBreakNode extends FootnoteLineBreakNode {
         static getType(): string {
             return `custom-${LINE_BREAK_TYPE}`;
@@ -40,6 +48,25 @@ function generateClass(
         }
         static importJSON(serializedNode: SerializedFootnoteLineBreakNode): CustomFootnoteLineBreakNode {
             return new CustomFootnoteLineBreakNode();
+        }
+        static importDOM(): DOMConversionMap<HTMLDivElement> | null {
+            if (options?.importDOM) {
+                const NodeClass = getNodeClass();
+                return options.importDOM(NodeClass);
+            }
+            return FootnoteLineBreakNode.importDOM();
+        }
+        createDOM(): HTMLElement {
+            if (options?.createDOM) {
+                return options.createDOM(this);
+            }
+            return super.createDOM();
+        }
+        exportDOM(): DOMExportOutput {
+            if (options?.exportDOM) {
+                return options.exportDOM(this);
+            }
+            return super.exportDOM();
         }
         exportJSON(): SerializedFootnoteLineBreakNode {
             return {

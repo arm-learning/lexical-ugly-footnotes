@@ -26,6 +26,17 @@ class MemoryStore {
     }
   }
 
+  // Type guard to ensure content exists after ensureDemoType
+  private getContent(demoType: string): StoreContent {
+    this.ensureDemoType(demoType);
+    const content = this.content[demoType];
+    if (!content) {
+      // This should never happen after ensureDemoType, but satisfies TypeScript
+      throw new Error(`Content for demoType "${demoType}" should exist`);
+    }
+    return content;
+  }
+
   // Get content in specific format for a demo type
   // Supports both new API: get(demoType, format) and old API: get(format)
   async get(demoTypeOrFormat?: string, format?: ContentFormat): Promise<string> {
@@ -45,8 +56,8 @@ class MemoryStore {
       actualFormat = format || 'json';
     }
     
-    this.ensureDemoType(demoType);
-    return this.content[demoType][actualFormat];
+    const content = this.getContent(demoType);
+    return content[actualFormat] || '';
   }
 
   // Set content in specific format for a demo type
@@ -68,30 +79,29 @@ class MemoryStore {
       actualFormat = format || 'json';
     }
     
-    this.ensureDemoType(demoType);
-    this.content[demoType][actualFormat] = content;
+    const storeContent = this.getContent(demoType);
+    storeContent[actualFormat] = content;
   }
 
   // Get both formats at once for a demo type (useful for testing)
-  async getAll(demoType: string = 'default'): Promise<StoreContent> {
+  async getAll(demoType = 'default'): Promise<StoreContent> {
     await this.simulateDelay();
-    this.ensureDemoType(demoType);
-    return { ...this.content[demoType] };
+    return { ...this.getContent(demoType) };
   }
 
   // Set both formats at once for a demo type
-  async setAll(content: StoreContent, demoType: string = 'default'): Promise<void> {
+  async setAll(content: StoreContent, demoType = 'default'): Promise<void> {
     await this.simulateDelay();
     this.content[demoType] = { ...content };
   }
 
   // Reset to defaults for a demo type
-  async reset(demoType: string = 'default', format?: ContentFormat): Promise<void> {
+  async reset(demoType = 'default', format?: ContentFormat): Promise<void> {
     await this.simulateDelay();
-    this.ensureDemoType(demoType);
     
     if (format) {
-      this.content[demoType][format] = format === 'json' 
+      const storeContent = this.getContent(demoType);
+      storeContent[format] = format === 'json' 
         ? JSON.stringify(DEFAULT_JSON_STATE)
         : DEFAULT_HTML_CONTENT;
     } else {
