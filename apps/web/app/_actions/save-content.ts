@@ -8,7 +8,7 @@ export type SaveResult = {
     error?: string;
 };
 
-export type DemoType = "default" | "css-vars" | "theme" | "override" | "nested";
+export type DemoType = "default" | "css-vars" | "theme" | "override" | "nested" | "hackernews";
 
 // Unified save function
 export async function saveContent(

@@ -19,6 +19,9 @@ const EditorShowcaseOverride = dynamic(() =>import("@repo/ui/editor-showcase-ove
 const EditorShowcaseNested = dynamic(() =>import("@repo/ui/editor-showcase-nested"), {
     ssr: false,
 });
+const EditorShowcaseHackerNews = dynamic(() =>import("@repo/ui/editor-showcase-hackernews"), {
+    ssr: false,
+});
 interface UnifiedEditorClientProps {
     content: string | null;
     format: "html" | "json";
@@ -88,6 +91,13 @@ export function UnifiedEditorClient({
             case "nested":
                 return (
                     <EditorShowcaseNested
+                        submitHandler={handleSubmit}
+                        content={content}
+                    />
+                );
+            case "hackernews":
+                return (
+                    <EditorShowcaseHackerNews
                         submitHandler={handleSubmit}
                         content={content}
                     />

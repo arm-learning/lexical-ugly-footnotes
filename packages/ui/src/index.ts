@@ -7,4 +7,5 @@ export * from "./editor-showcase-theme.js";
 export * from "./editor-showcase-default.js";
 export * from "./editor-showcase-override.js";
 export * from "./editor-showcase-nested.js";
+export * from "./editor-showcase-hackernews.js";
 export * from "./nodes/NestedFootnoteDemoNode.js";
