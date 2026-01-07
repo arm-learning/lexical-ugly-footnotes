@@ -34,7 +34,7 @@ function onError(error: Error) {
   console.error(error);
 }
 
-export function EditorShowcaseCssVars({ submitHandler, content }: EditorShowcaseCssVarsProps) {
+export const EditorShowcaseCssVars = ({ submitHandler, content }: EditorShowcaseCssVarsProps) => {
   const editorRef = useRef<LexicalEditor | null>(null);
   const initialConfig = {
     namespace: "Showcase-CSSVars",
@@ -131,3 +131,4 @@ export function EditorShowcaseCssVars({ submitHandler, content }: EditorShowcase
   );
 }
 
+export default EditorShowcaseCssVars;

@@ -39,10 +39,10 @@ function onError(error: Error) {
 	console.error(error);
 }
 
-export function EditorShowcaseNested({
+export const EditorShowcaseNested = ({
 	submitHandler,
 	content,
-}: EditorShowcaseNestedProps) {
+}: EditorShowcaseNestedProps) => {
 	const editorRef = useRef<LexicalEditor | null>(null);
 	const initialConfig = {
 		namespace: "Showcase-Nested",
@@ -160,3 +160,4 @@ export function EditorShowcaseNested({
 	);
 }
 
+export default EditorShowcaseNested;

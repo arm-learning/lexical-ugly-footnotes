@@ -50,7 +50,7 @@ function onError(error: Error) {
   console.error(error);
 }
 
-export function EditorShowcaseTheme({ submitHandler, content }: EditorShowcaseThemeProps) {
+export const EditorShowcaseTheme = ({ submitHandler, content }: EditorShowcaseThemeProps) => {
   const editorRef = useRef<LexicalEditor | null>(null);
   const initialConfig = {
     namespace: "Showcase-Theme",
@@ -128,3 +128,4 @@ export function EditorShowcaseTheme({ submitHandler, content }: EditorShowcaseTh
   );
 }
 
+export default EditorShowcaseTheme;

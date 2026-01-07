@@ -10,6 +10,7 @@ import { parseHTML } from "linkedom";
 import { HeadingNode } from "@lexical/rich-text";
 import { UnifiedFormatTabs } from "../../../_components/UnifiedFormatTabs";
 import { UnifiedViewTabs } from "../../../_components/UnifiedViewTabs";
+import { NestedFootnoteDemoNode } from "../../../../../../packages/ui/src/nodes/NestedFootnoteDemoNode.server";
 
 interface NestedPreviewPageProps {
     searchParams: Promise<{ format?: string }>;
@@ -47,7 +48,6 @@ export default async function NestedPreviewPage({
 
         try {
             // Create headless editor
-            // Note: NestedFootnoteDemoNode is not available server-side, so we'll just render the basic nodes
             const editor = createHeadlessEditor({
                 namespace: "preview",
                 nodes: [
@@ -55,6 +55,7 @@ export default async function NestedPreviewPage({
                     FootnoteBlockNode,
                     FootnoteReferenceNode,
                     FootnoteLineBreakNode,
+                    NestedFootnoteDemoNode,
                 ],
                 onError: console.error,
             });
@@ -78,6 +79,7 @@ export default async function NestedPreviewPage({
     } else {
         html = content;
     }
+    console.log({ html });
 
     return (
         <div>

@@ -12,8 +12,8 @@ import {
 } from "lexical";
 // Import from BASE classes for instanceof checks (works for both server and client nodes)
 import { FootnoteReferenceBase, $isFootnoteReferenceNode } from "../shared/nodes/Reference.base.js";
-import { FootnoteBlockBase, $isFootnoteBlockNode } from "../shared/nodes/Block.base.js";
-import { FootnoteLineBreakBase, $isFootnoteLineBreakNode } from "../shared/nodes/LineBreak.base.js";
+import { $isFootnoteBlockNode } from "../shared/nodes/Block.base.js";
+import { $isFootnoteLineBreakNode } from "../shared/nodes/LineBreak.base.js";
 import { footnoteService, type RefId, type FootnoteRef, type FootnoteBlock } from "../shared/service.js";
 
 // Re-export shared types and service

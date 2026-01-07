@@ -1,18 +1,24 @@
 "use client";
 
 import { Editor } from "@repo/ui";
-import {
-    EditorShowcaseCssVars,
-    EditorShowcaseTheme,
-    EditorShowcaseOverride,
-    EditorShowcaseNested,
-} from "@repo/ui";
 import { useTransition, useState } from "react";
 import type { LexicalEditor } from "lexical";
 import { $generateHtmlFromNodes } from "@lexical/html";
 import type { SaveResult, DemoType } from "../_actions/save-content";
 import { saveContent } from "../_actions/save-content";
-
+import dynamic from "next/dynamic"
+const EditorShowcaseCssVars = dynamic(() => import("@repo/ui/editor-showcase-css-vars"), {
+    ssr: false,
+});
+const EditorShowcaseTheme = dynamic(() =>import("@repo/ui/editor-showcase-theme"), {
+    ssr: false,
+});
+const EditorShowcaseOverride = dynamic(() =>import("@repo/ui/editor-showcase-override"), {
+    ssr: false,
+});
+const EditorShowcaseNested = dynamic(() =>import("@repo/ui/editor-showcase-nested"), {
+    ssr: false,
+});
 interface UnifiedEditorClientProps {
     content: string | null;
     format: "html" | "json";

@@ -34,7 +34,7 @@ function onError(error: Error) {
   console.error(error);
 }
 
-export function EditorShowcaseOverride({ submitHandler, content }: EditorShowcaseOverrideProps) {
+export const EditorShowcaseOverride = ({ submitHandler, content }: EditorShowcaseOverrideProps) => {
   const editorRef = useRef<LexicalEditor | null>(null);
   const initialConfig = {
     namespace: "Showcase-Override",
@@ -158,3 +158,4 @@ export function EditorShowcaseOverride({ submitHandler, content }: EditorShowcas
   );
 }
 
+export default EditorShowcaseOverride;
