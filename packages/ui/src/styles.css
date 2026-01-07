@@ -2,3 +2,9 @@
 /* biome-ignore css/syntax/noInvalidAtImport: tailwind specific syntax */
 @import "tailwindcss";
 @import "@repo/tailwind-config";
+
+.hn-block {
+    grid-template-columns: auto auto auto;
+    gap: 0.25rem;
+    padding: 0;
+}

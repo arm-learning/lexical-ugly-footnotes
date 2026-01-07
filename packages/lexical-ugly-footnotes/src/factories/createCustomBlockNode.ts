@@ -36,10 +36,14 @@ function generateClass(
             return `custom-${BLOCK_TYPE}`;
         }
         static clone(node: CustomFootnoteBlockNode): CustomFootnoteBlockNode {
-            return new CustomFootnoteBlockNode(node.__key);
+            return new CustomFootnoteBlockNode(
+                node.__referenceId,
+                node.__blockNote,
+                node.__key,
+            );
         }
         static importJSON(serializedNode: SerializedFootnoteBlockNode): CustomFootnoteBlockNode {
-            return new CustomFootnoteBlockNode();
+            return new CustomFootnoteBlockNode().updateFromJSON(serializedNode);
         }
         exportJSON(): SerializedFootnoteBlockNode {
             return {

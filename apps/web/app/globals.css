@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "@repo/tailwind-config";
 @import "lexical-ugly-footnotes/styles.css";
+@import "@repo/ui/styles.css";
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;

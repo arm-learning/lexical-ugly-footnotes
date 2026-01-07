@@ -16,7 +16,6 @@ import {
 // Import theme from nodes (re-exported from client)
 // For Hacker News style, we use a minimal theme
 const minimalTheme = {};
-import { XIcon } from "lucide-react";
 
 const HackerNewsBlock = ({
     referenceId = "",
@@ -47,37 +46,13 @@ const HackerNewsBlock = ({
     }, [editor, nodeKey, referenceId]);
 
     return (
-        <p className="hn-block" style={{ margin: "4px 0" }}>
-            <span style={{ marginRight: "4px" }}>[{order}]</span>
-            <LexicalNestedComposer initialEditor={blockNote} initialTheme={minimalTheme}>
-                <RichTextPlugin
-                    contentEditable={
-                        <ContentEditable
-                            className="hn-block-editor"
-                            style={{
-                                display: "inline",
-                                minWidth: "200px",
-                                outline: isSelected ? "1px solid #ccc" : "none",
-                            }}
-                        />
-                    }
-                    ErrorBoundary={LexicalErrorBoundary}
-                    placeholder={null}
-                />
-                <LinkPlugin
-                    attributes={{
-                        rel: "nofollow",
-                        target: "_blank",
-                    }}
-                />
-                <HistoryPlugin externalHistoryState={historyState} />
-            </LexicalNestedComposer>
+        <div className="hn-block grid grid-cols-[auto_auto_auto] gap-1" style={{ margin: "4px 0" }}>
+            <span>[{order}]</span>
             <button
                 type="button"
                 onClick={onSubmit}
                 className="hn-delete"
                 style={{
-                    marginLeft: "8px",
                     cursor: "pointer",
                     background: "none",
                     border: "none",
@@ -89,7 +64,24 @@ const HackerNewsBlock = ({
             >
                 ×
             </button>
-        </p>
+            <LexicalNestedComposer initialEditor={blockNote} initialTheme={minimalTheme}>
+                <RichTextPlugin
+                    contentEditable={
+                        <ContentEditable
+                            className="hn-block-editor border-b-2 border-gray-200"
+                            style={{
+                                display: "inline",
+                                minWidth: "200px",
+                                outline: isSelected ? "1px solid #ccc" : "none",
+                            }}
+                        />
+                    }
+                    ErrorBoundary={LexicalErrorBoundary}
+                    placeholder={null}
+                />
+                <HistoryPlugin externalHistoryState={historyState} />
+            </LexicalNestedComposer>
+        </div>
     );
 };
 

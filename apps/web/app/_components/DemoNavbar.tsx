@@ -13,6 +13,7 @@ const demoTypes = [
     { key: "theme", label: "Theme Config", path: "/demo/theme" },
     { key: "override", label: "CSS Override", path: "/demo/override" },
     { key: "nested", label: "Nested Footnotes", path: "/demo/nested" },
+    { key: "hackernews", label: "Hacker News", path: "/demo/hackernews" },
 ] as const;
 
 export function DemoNavbar({ className = "" }: DemoNavbarProps) {
@@ -23,6 +24,7 @@ export function DemoNavbar({ className = "" }: DemoNavbarProps) {
         if (pathname.startsWith("/demo/theme")) return "theme";
         if (pathname.startsWith("/demo/override")) return "override";
         if (pathname.startsWith("/demo/nested")) return "nested";
+        if (pathname.startsWith("/demo/hackernews")) return "hackernews";
         if (pathname.startsWith("/demo")) return "default";
         return null;
     };
