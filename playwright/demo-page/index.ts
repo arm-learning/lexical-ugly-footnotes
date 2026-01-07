@@ -20,7 +20,7 @@ export class DemoPage {
         this.mainEditor = page.locator('[contenteditable="true"]').first();
     }
 
-    async goto(demoType: 'default' | 'css-vars' | 'theme' | 'override') {
+    async goto(demoType: 'default' | 'css-vars' | 'theme' | 'override' | 'hackernews' | 'nested') {
         const path = demoType === 'default' ? '/demo' : `/demo/${demoType}`;
         await this.page.goto(path);
     }
@@ -65,6 +65,10 @@ export class DemoPage {
             // or simply relying on the fact that addFootnote waited for the editor is enough.
             // But let's check for a sup element which is common structure
             await this.page.waitForSelector('sup');
+        } else if (demoType === 'hackernews') {
+            // HackerNews demo uses custom components with different classes
+            await this.page.waitForSelector('.hn-block');
+            await this.page.waitForSelector('.hn-reference');
         } else {
             // Check for presence of default footnote elements
             await this.page.waitForSelector('.luf-block');

@@ -1,6 +1,6 @@
 {
   "name": "lexical-ugly-footnotes",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "main": "./dist/index.server.js",
   "module": "./dist/index.server.js",
@@ -34,6 +34,7 @@
     },
     "./styles.css": "./dist/index.css"
   },
+  "files": ["dist", "README.md", "LICENSE"],
   "scripts": {
     "build": "turbo run build:styles build:components",
     "build:components": "tsc",

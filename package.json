@@ -13,7 +13,8 @@
     "test:codegen": "playwright codegen http://localhost:3000",
     "changeset": "changeset",
     "version-packages": "changeset version",
-    "release": "pnpm build && changeset publish"
+    "test:publish": "cd packages/lexical-ugly-footnotes && pnpm build && pnpm pack && cd ../.. && mkdir -p .test-publish && cd .test-publish && pnpm init -y && pnpm add ../lexical-ugly-footnotes/lexical-ugly-footnotes-*.tgz && node --input-type=module -e \"import('lexical-ugly-footnotes').then(() => console.log('✓ Package imports successfully')).catch(e => { console.error('✗ Import failed:', e); process.exit(1); })\" && cd .. && rm -rf .test-publish && rm -f packages/lexical-ugly-footnotes/*.tgz",
+    "release": "pnpm build && pnpm test:publish && changeset publish"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
