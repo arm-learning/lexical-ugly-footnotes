@@ -40,8 +40,20 @@ export function Editor({ submitHandler, content }: EditorProps) {
     onError,
     nodes: [HeadingNode, FootnoteBlockNode, FootnoteReferenceNode, FootnoteLineBreakNode],
     editorState: (editor) => {
-      console.log({ content });
-      if (content && content[0] === '<' && typeof window !== "undefined") {
+      // Ensure content is a string before processing
+      if (!content || typeof content !== 'string') {
+        // If no content or invalid type, use default state
+        const root = $getRoot();
+        const title = $createHeadingNode("h1");
+        const titleText = $createTextNode("Welcome to the footnote editor!");
+        title.append(titleText);
+        root.append(title);
+        return;
+      }
+
+      // Check if content is HTML (starts with '<' after trimming whitespace)
+      // Only parse HTML if we're in a browser environment (DOMParser requires window)
+      if (content.trim().startsWith('<') && typeof window !== "undefined") {
         const dom = new DOMParser();
         const document = dom.parseFromString(content, "text/html");
         const nodes = $generateNodesFromDOM(editor, document);
@@ -53,12 +65,46 @@ export function Editor({ submitHandler, content }: EditorProps) {
         return;
       }
 
+      // If content looks like HTML but window is not available, skip parsing
+      // (will be handled on client-side hydration)
+      if (content.trim().startsWith('<') && typeof window === "undefined") {
+        return;
+      }
+
+      // Don't try to parse as JSON if content looks like HTML
+      // (even if window check failed, we shouldn't attempt JSON parsing)
+      if (content.trim().startsWith('<')) {
+        // If we get here, content is HTML but window check failed
+        // This shouldn't happen on client-side, but be safe
+        return;
+      }
+
+      // Try to parse as JSON
       if (content) {
-        const editorState = editor.parseEditorState(content);
-        if (editorState.isEmpty()) {
+        try {
+          const editorState = editor.parseEditorState(content);
+          if (editorState.isEmpty()) {
+            return;
+          }
+          return editor.setEditorState(editorState);
+        } catch (error) {
+          // If JSON parsing fails, it might be HTML that wasn't detected
+          // Try parsing as HTML as fallback (only if window is available)
+          if (content.trim().startsWith('<') && typeof window !== "undefined") {
+            const dom = new DOMParser();
+            const document = dom.parseFromString(content, "text/html");
+            const nodes = $generateNodesFromDOM(editor, document);
+            const root = $getRoot();
+            root.clear();
+            for (const node of nodes) {
+              root.append(node);
+            };
+            return;
+          }
+          // If it's not HTML either, log the error and continue with default state
+          console.error("Failed to parse content:", error);
           return;
         }
-        return editor.setEditorState(editorState);
       }
 
       const root = $getRoot();

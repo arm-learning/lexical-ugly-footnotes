@@ -79,7 +79,6 @@ export default async function NestedPreviewPage({
     } else {
         html = content;
     }
-    console.log({ html });
 
     return (
         <div>

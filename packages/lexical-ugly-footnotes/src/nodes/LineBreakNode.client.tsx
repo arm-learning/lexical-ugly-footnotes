@@ -8,6 +8,7 @@ import {
 	createConvertFootnoteLineBreakNode,
 	type SerializedFootnoteLineBreakNode,
 } from "../shared/nodes/LineBreak.base.js";
+import { LINE_BREAK_TYPE } from "../shared/constants/line-break.js";
 import { getLineBreakClasses } from "../theme/index.js";
 import type { LineBreakComponentProps } from "../types/line-break.js";
 
@@ -21,6 +22,10 @@ export type { FootnoteLineBreakNodeProps, SerializedFootnoteLineBreakNode } from
 export class FootnoteLineBreakNode extends FootnoteLineBreakBase<React.ReactNode> {
 	constructor(key?: NodeKey) {
 		super(key);
+	}
+
+	static getType(): string {
+		return LINE_BREAK_TYPE;
 	}
 
 	static clone(node: FootnoteLineBreakNode): FootnoteLineBreakNode {

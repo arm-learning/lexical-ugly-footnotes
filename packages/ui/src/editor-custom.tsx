@@ -61,7 +61,6 @@ export function EditorCustom({ submitHandler, content }: EditorCustomProps) {
       lineBreakReplacement,
     ],
     editorState: (editor) => {
-      console.log({ content });
       if (content && content[0] === "<") {
         const dom = new DOMParser();
         const document = dom.parseFromString(content, "text/html");

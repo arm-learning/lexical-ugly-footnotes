@@ -9,6 +9,7 @@ import {
 	createNestedEditor,
 	type SerializedFootnoteBlockNode,
 } from "../shared/nodes/Block.base.js";
+import { BLOCK_TYPE } from "../shared/constants/block.js";
 import { getBlockClasses } from "../theme/index.js";
 import type { BlockComponentProps } from "../types/block.js";
 
@@ -24,8 +25,8 @@ export {
 // ============================================================================
 
 export class FootnoteBlockNode extends FootnoteBlockBase<React.ReactNode> {
-	constructor(referenceId?: string, blockNote?: LexicalEditor, key?: NodeKey) {
-		super(referenceId, blockNote, key);
+	static getType(): string {
+		return BLOCK_TYPE;
 	}
 
 	static clone(node: FootnoteBlockNode): FootnoteBlockNode {

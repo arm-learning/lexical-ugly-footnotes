@@ -67,5 +67,8 @@
   },
   "dependencies": {
     "react": "catalog:"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

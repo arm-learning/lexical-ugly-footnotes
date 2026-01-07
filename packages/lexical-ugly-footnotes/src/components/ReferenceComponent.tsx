@@ -12,7 +12,6 @@ const FootnoteReferenceComponent = ({
 	order = 0,
 	classNames,
 }: ReferenceComponentProps) => {
-	// console.log({ referenceId, nodeKey, order })
 	const [editor] = useLexicalComposerContext();
 	// const { removeNodeAndReplaceParagraph } = useNodeRemove({ nodeKey });
 	const { ref, isActive, setActive } = useNodeActive<HTMLElement>({});

@@ -8,6 +8,7 @@ import {
 	createConvertFootnoteReferenceElement,
 	type SerializedFootnoteReferenceNode,
 } from "../shared/nodes/Reference.base.js";
+import { REFERENCE_TYPE } from "../shared/constants/reference.js";
 import { getReferenceClasses } from "../theme/index.js";
 import type { ReferenceComponentProps } from "../types/reference.js";
 
@@ -25,6 +26,10 @@ export class FootnoteReferenceNode extends FootnoteReferenceBase<React.ReactNode
 		key?: NodeKey,
 	) {
 		super(referenceId, order, key);
+	}
+
+	static getType(): string {
+		return REFERENCE_TYPE;
 	}
 
 	static clone(node: FootnoteReferenceNode): FootnoteReferenceNode {

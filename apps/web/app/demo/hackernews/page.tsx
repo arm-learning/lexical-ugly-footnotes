@@ -25,8 +25,6 @@ export default async function HackerNewsPage({ searchParams }: HackerNewsPagePro
             </div>
             <p className="text-gray-600 mb-4">
                 This editor demonstrates Hacker News-style footnotes with minimal styling.
-                References appear as <code className="bg-gray-100 px-1 rounded">[1]</code> and
-                blocks render as <code className="bg-gray-100 px-1 rounded">[1] &lt;a&gt;link&lt;/a&gt;</code> format.
             </p>
             <p className="text-gray-600 mb-4 text-sm">
                 Content is saved as {format.toUpperCase()} format
