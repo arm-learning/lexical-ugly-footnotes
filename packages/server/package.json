@@ -1,0 +1,33 @@
+{
+    "name": "@repo/server",
+    "version": "0.0.0",
+    "type": "module",
+    "files": [
+      "dist"
+    ],
+    "exports": {
+      ".": "./dist/index.js",
+      "./*": "./dist/*.js"
+    },
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "license": "MIT",
+    "scripts": {
+      "build": "tsc",
+      "check-types": "tsc --noEmit",
+      "dev": "tsx watch src/index.ts",
+      "start": "node dist/index.js",
+      "clean": "rm -rf dist"
+    },
+    "dependencies": {
+      "@repo/store": "workspace:*",
+      "hono": "^4.0.0",
+      "@hono/node-server": "^1.13.0"
+    },
+    "devDependencies": {
+      "@repo/typescript-config": "workspace:*",
+      "@types/node": "catalog:",
+      "typescript": "catalog:",
+      "tsx": "^4.7.0"
+    }
+  }

@@ -1,0 +1,95 @@
+/* Component-level styles for the UI package */
+/* biome-ignore css/syntax/noInvalidAtImport: tailwind specific syntax */
+@import "tailwindcss";
+@import "@repo/tailwind-config";
+.luf-linebreak {
+    /* --line-break-color: currentColor;
+    --line-break-height: 1px;
+    --line-break-spacing: 1rem; */
+    
+    position: relative;
+    width: 100%;
+    padding: var(--luf-linebreak-spacing, 1rem) 0;
+    cursor: pointer;
+  }
+  
+  .luf-linebreak::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: var(--luf-linebreak-height, 1px);
+    background-color: var(--luf-linebreak-color, currentColor);
+    /* opacity: 0.25; */
+  }
+  
+  /* .lfn-line-break--active::after {
+    opacity: 0.5;
+  } */
+
+  .luf-block {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: var(--luf-block-gap, 0.5rem);
+    padding: var(--luf-block-padding, 0.5rem 0);
+    background: var(--luf-block-bg, transparent);
+}
+
+/* Divider between stacked footnotes */
+/* .luf-block + .luf-block {
+    border-top: var(--luf-block-divider-width, 2px) solid var(--luf-block-divider-color, currentColor);
+} */
+
+/* === Order Number (superscript) === */
+.luf-block-order {
+    color: var(--luf-block-order-color, currentColor);
+    font-size: var(--luf-block-order-size, 0.75em);
+    line-height: 1;
+    padding-top: var(--luf-block-order-padding-top, 0.75rem);
+}
+
+/* === Nested Editor === */
+.luf-block-editor {
+    position: relative;
+    height: 100%;
+    outline: none;
+    padding: var(--luf-block-editor-padding, 0.75rem 0.25rem);
+    background: var(--luf-block-editor-bg, transparent);
+    border: var(--luf-block-editor-border-width, 2px) solid var(--luf-block-editor-border-color, currentColor);
+    border-radius: var(--luf-block-editor-border-radius, 0.75rem);
+}
+
+/* === Delete Button === */
+.luf-block-delete {
+    align-self: center;
+    cursor: pointer;
+    opacity: var(--luf-block-delete-opacity, 0.5);
+    transition: opacity 0.15s ease;
+}
+
+.luf-block-delete:hover {
+    opacity: 1;
+}
+
+.luf-block-editor-static {
+  border-left: var(--luf-block-editor-static-border-width, 2px) solid var(--luf-block-editor-static-border-color, currentColor);
+  padding-left: var(--luf-block-editor-static-padding, 0.5rem);
+}
+
+.luf-reference {
+  /* Container span - no styles needed, just for structure */
+}
+
+.luf-reference-sup {
+  cursor: pointer;
+  padding-left: var(--luf-reference-padding-left, 2px);
+}
+
+/* Active and Focus states share the same styling by default */
+.luf-reference-sup--active,
+.luf-reference-sup--focus {
+  border-width: var(--luf-reference-highlight-border-width, 2px);
+  border-style: solid;
+  border-color: var(--luf-reference-highlight-border-color, currentColor);
+}
