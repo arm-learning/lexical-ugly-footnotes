@@ -112,11 +112,6 @@ export const EditorShowcaseCssVars = ({ submitHandler, content }: EditorShowcase
                 contentEditable={
                   <ContentEditable className="outline-none min-h-[150px]" />
                 }
-                // placeholder={
-                //   // <p className="absolute top-4 left-4 text-gray-400 pointer-events-none">
-                //   //   Enter some text...
-                //   // </p>
-                // }
                 ErrorBoundary={LexicalErrorBoundary}
               />
               <EditorRefPlugin editorRef={editorRef} />
