@@ -10,7 +10,7 @@ let CustomReferenceNode: CustomReferenceNodeClass;
 
 export function createCustomReferenceNode(
     referenceComponent: ComponentType<ReferenceComponentProps>,
-    options?: CreateDOMCustomizer,
+    options?: CreateDOMCustomizerReferenceNode,
 ): [CustomReferenceNodeClass, LexicalNodeReplacement] {
     CustomReferenceNode = CustomReferenceNode || generateClass(referenceComponent, () => CustomReferenceNode, options);
     registerReferenceNodeClass(CustomReferenceNode);
@@ -26,7 +26,7 @@ export function createCustomReferenceNode(
     ]
 }
 
-export type CreateDOMCustomizer = {
+export type CreateDOMCustomizerReferenceNode = {
     createDOM?: (node: FootnoteReferenceNode) => HTMLElement;
     exportDOM?: (node: FootnoteReferenceNode) => DOMExportOutput;
     importDOM?: (NodeClass: CustomReferenceNodeClass) => DOMConversionMap | null;
@@ -35,7 +35,7 @@ export type CreateDOMCustomizer = {
 function generateClass(
     referenceComponent: ComponentType<ReferenceComponentProps>,
     getNodeClass: () => CustomReferenceNodeClass,
-    options?: CreateDOMCustomizer,
+    options?: CreateDOMCustomizerReferenceNode,
 ) {
     return class CustomFootnoteReferenceNode extends FootnoteReferenceNode {
         static getType(): string {

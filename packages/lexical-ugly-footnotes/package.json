@@ -36,7 +36,8 @@
   },
   "files": ["dist", "README.md", "LICENSE"],
   "scripts": {
-    "build": "turbo run build:styles build:components",
+    "clean": "rm -rf dist",
+    "build": "pnpm clean && turbo run build:styles build:components",
     "build:components": "tsc",
     "build:styles": "tailwindcss -i ./src/styles.css -o ./dist/index.css",
     "dev:components": "tsc --watch",

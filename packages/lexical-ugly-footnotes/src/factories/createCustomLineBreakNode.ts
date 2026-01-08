@@ -10,7 +10,7 @@ let CustomLineBreakNode: CustomLineBreakNodeClass
 
 export function createCustomLineBreakNode(
     lineBreakComponent: ComponentType<LineBreakComponentProps>,
-    options?: CreateDOMCustomizer,
+    options?: CreateDOMCustomizerLineBreakNode,
 ): [CustomLineBreakNodeClass, LexicalNodeReplacement] {
     CustomLineBreakNode = CustomLineBreakNode || generateClass(lineBreakComponent, () => CustomLineBreakNode, options);
 
@@ -28,7 +28,7 @@ export function createCustomLineBreakNode(
     ]
 }
 
-export type CreateDOMCustomizer = {
+export type CreateDOMCustomizerLineBreakNode = {
     createDOM?: (node: FootnoteLineBreakNode) => HTMLElement;
     exportDOM?: (node: FootnoteLineBreakNode) => DOMExportOutput;
     importDOM?: (NodeClass: CustomLineBreakNodeClass) => DOMConversionMap<HTMLDivElement> | null;
@@ -37,7 +37,7 @@ export type CreateDOMCustomizer = {
 function generateClass(
     lineBreakComponent: ComponentType<LineBreakComponentProps>,
     getNodeClass: () => CustomLineBreakNodeClass,
-    options?: CreateDOMCustomizer,
+    options?: CreateDOMCustomizerLineBreakNode,
 ) {
     return class CustomFootnoteLineBreakNode extends FootnoteLineBreakNode {
         static getType(): string {

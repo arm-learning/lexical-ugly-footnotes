@@ -10,7 +10,7 @@ let CustomBlockNode: CustomBlockNodeClass;
 
 export function createCustomBlockNode(
     blockComponent: ComponentType<BlockComponentProps>,
-    options?: CreateDOMCustomizer,
+    options?: CreateDOMCustomizerBlockNode,
 ): [CustomBlockNodeClass, LexicalNodeReplacement] {
     CustomBlockNode = CustomBlockNode || generateClass(blockComponent, () => CustomBlockNode, options);
     registerBlockNodeClass(CustomBlockNode);
@@ -29,7 +29,7 @@ export function createCustomBlockNode(
     ]
 }
 
-export type CreateDOMCustomizer = {
+export type CreateDOMCustomizerBlockNode = {
     createDOM?: (node: FootnoteBlockNode) => HTMLElement;
     exportDOM?: (node: FootnoteBlockNode) => DOMExportOutput;
     importDOM?: (NodeClass: CustomBlockNodeClass) => DOMConversionMap | null;
@@ -38,7 +38,7 @@ export type CreateDOMCustomizer = {
 function generateClass(
     blockComponent: ComponentType<BlockComponentProps>,
     getNodeClass: () => CustomBlockNodeClass,
-    options?: CreateDOMCustomizer,
+    options?: CreateDOMCustomizerBlockNode,
 ) {
     return class CustomFootnoteBlockNode extends FootnoteBlockNode {
         static getType(): string {

@@ -7,6 +7,6 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["@repo/ui", "@repo/store", "@repo/tailwind-config", "@repo/typescript-config", "web", "vite-app"]
+  "ignore": ["@repo/ui", "@repo/store", "web", "vite-app", "@repo/server"]
 }
 
