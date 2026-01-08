@@ -10,11 +10,9 @@ import {
 	$isRootNode,
 	$isTextNode,
 	COMMAND_PRIORITY_LOW,
-	createCommand,
 	type ElementNode,
 	KEY_BACKSPACE_COMMAND,
 	KEY_DELETE_COMMAND,
-	type LexicalCommand,
 	type LexicalEditor,
 	type LexicalNode,
 	ParagraphNode,
@@ -32,14 +30,11 @@ import {
 } from "../core/client.js";
 import { v7 as uuidv7 } from "uuid";
 import { $createFootnoteLineBreakNode, $isFootnoteLineBreakNode } from "../nodes/LineBreakNode.client.js";
-
-
-export const INSERT_FOOTNOTE_BLOCK_COMMAND: LexicalCommand<void> =
-	createCommand();
-
-export const INSERT_FOOTNOTE_NESTED_COMMAND: LexicalCommand<void> =
-	createCommand();
-export const RECONCILE_FOOTNOTES_COMMAND = createCommand<void>();
+import {
+	INSERT_FOOTNOTE_BLOCK_COMMAND,
+	INSERT_FOOTNOTE_NESTED_COMMAND,
+	RECONCILE_FOOTNOTES_COMMAND,
+} from "../shared/constants/commands.js";
 
 const $findPreviousFootnoteBeforeCursor = (
 	anchorNode: TextNode | ParagraphNode | ElementNode,

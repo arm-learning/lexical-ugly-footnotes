@@ -12,7 +12,7 @@ const NestedEditorButton = () => {
     const handleClick = () => {
         editor.update(() => {
             const selection = $getSelection();
-            const nestedNode = $createNestedFootnoteDemoNode();
+            const nestedNode = $createNestedFootnoteDemoNode(undefined, "New nested editor");
             
             if ($isRangeSelection(selection)) {
                 $insertNodes([nestedNode]);

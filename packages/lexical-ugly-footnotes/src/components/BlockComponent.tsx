@@ -6,16 +6,35 @@ import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import { LexicalNestedComposer } from "@lexical/react/LexicalNestedComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
-import type { LexicalEditor, NodeKey } from "lexical";
-import { XIcon } from "lucide-react";
 import { useSharedHistoryState } from "./SharedHistoryState.js";
 import { theme } from "../nodes/BlockNode.server.js";
 import {
 	$removeFootnoteByBlockNodeKeyTwo,
 	$removeFootnoteReferenceNodeByReferenceId,
-} from "../core/client.js";
+} from "../core/component-utils.js";
 import type { BlockComponentProps } from "../types/block.js";
 import { twMerge } from "tailwind-merge";
+
+// X icon component
+const XIcon = ({ className, ...props }: React.SVGProps<SVGSVGElement>) => (
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		width="24"
+		height="24"
+		viewBox="0 0 24 24"
+		fill="none"
+		stroke="currentColor"
+		strokeWidth="2"
+		strokeLinecap="round"
+		strokeLinejoin="round"
+		className={className}
+		aria-hidden="true"
+		{...props}
+	>
+		<path d="M18 6L6 18" />
+		<path d="M6 6l12 12" />
+	</svg>
+);
 
 // const EditorContentFloatingToolbar = dynamic(
 // 	() =>

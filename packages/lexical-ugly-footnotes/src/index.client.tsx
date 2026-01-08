@@ -30,6 +30,7 @@ export * from "./factories/index.js";
 // Re-export server-safe items
 export * from "./core/index.js";
 export * from "./core/client.js";
+export * from "./core/component-utils.js";
 export * from "./shared/service.js";
 export * from "./types/block.js";
 export * from "./types/line-break.js";
@@ -38,4 +39,5 @@ export * from "./shared/constants/block.js";
 export * from "./shared/constants/line-break.js";
 export * from "./shared/constants/reference.js";
 export * from "./shared/constants/prefix.js";
+export * from "./shared/constants/commands.js";
 export * from "./theme/index.js";

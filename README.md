@@ -72,8 +72,17 @@ const FootnoteButton = () => {
 ### TODOS
 
 - [ ] chore: cleanup layout of tabs
+- [ ] chore: replace vite stand in with vite based framework like tanstack start
 - [ ] test: increase depth of playwright tests
 - [ ] minor enhancement: add ability to handle multiple decorators
 - [ ] major: add shared history
 - [ ] bug: deletion of nodes is extremely buggy
 - [ ] bug: history is extremely buggy
+
+- [ ] fix dependencies
+  - [ ] rename variables
+  - [ ] rerun tests
+  - [ ] circular import check
+  - [ ] retest output of dependencies package.json
+  - [ ] test changeset ignore list
+  - [ ] test size of package

@@ -12,14 +12,17 @@ import {
 	type CaretDirection,
 	COMMAND_PRIORITY_LOW,
 	COMMAND_PRIORITY_NORMAL,
-	createCommand,
-	type LexicalCommand,
 	type LexicalEditor,
 	type NodeCaret,
 	ParagraphNode,
 } from "lexical";
 import { useEffect } from "react";
-import { INSERT_FOOTNOTE_BLOCK_COMMAND, RECONCILE_FOOTNOTES_COMMAND } from "./FootnotePlugin.js";
+import {
+	INSERT_FOOTNOTE_BLOCK_COMMAND,
+	RECONCILE_FOOTNOTES_COMMAND,
+	UPDATE_FOOTNOTE_ORDERS_COMMAND,
+	REMOVE_FOOTNOTE_REFERENCE_NODE_BY_REFERENCE_ID_COMMAND,
+} from "../shared/constants/commands.js";
 import { footnoteService, isEditorActive, nextOrderForChildInsertion } from "../core/index.js";
 import { v7 as uuidv7 } from "uuid";
 import { $createFootnoteReferenceNode, FootnoteReferenceNode } from "../nodes/ReferenceNode.client.js";
@@ -28,11 +31,6 @@ interface NestedFootnotePluginProps {
 	editor: LexicalEditor;
 	nodeKey: string;
 }
-
-export const UPDATE_FOOTNOTE_ORDERS_COMMAND: LexicalCommand<void> =
-	createCommand();
-export const REMOVE_FOOTNOTE_REFERENCE_NODE_BY_REFERENCE_ID_COMMAND: LexicalCommand<string> =
-	createCommand();
 
 export const NestedFootnotePlugin = ({
 	editor,

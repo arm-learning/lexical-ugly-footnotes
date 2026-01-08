@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "type": "module",
   "main": "./dist/index.server.js",
-  "module": "./dist/index.server.js",
   "types": "./dist/index.server.d.ts",
   "typesVersions": {
     "*": {
@@ -14,21 +13,16 @@
   },
   "exports": {
     ".": {
+      "types": "./dist/index.server.d.ts",
       "react-server": "./dist/index.server.js",
       "browser": "./dist/index.client.js",
-      "import": "./dist/index.server.js",
-      "require": "./dist/index.server.js",
       "default": "./dist/index.server.js"
     },
     "./server": {
-      "import": "./dist/index.server.js",
-      "require": "./dist/index.server.js",
       "types": "./dist/index.server.d.ts",
       "default": "./dist/index.server.js"
     },
     "./client": {
-      "import": "./dist/index.client.js",
-      "require": "./dist/index.client.js",
       "types": "./dist/index.client.d.ts",
       "default": "./dist/index.client.js"
     },
@@ -43,7 +37,8 @@
     "dev:components": "tsc --watch",
     "dev:styles": "tailwindcss -i ./src/styles.css -o ./dist/index.css --watch",
     "dev": "turbo run dev:styles dev:components",
-    "circular:npx": "npx madge --circular --extensions ts,tsx --ts-config ./tsconfig.json ./src"
+    "circular:npx": "npx madge --circular --extensions ts,tsx --ts-config ./tsconfig.json ./src",
+    "pack:test": "rm -f ./*.tgz && pnpm pack --silent && tar -xzf ./*.tgz -O package/package.json"
   },
   "peerDependencies": {
     "@lexical/react": "catalog:",
@@ -54,21 +49,20 @@
     "@lexical/plain-text": "catalog:",
     "@lexical/selection": "catalog:",
     "@lexical/html": "catalog:",
-    "lucide-react": "catalog:",
-    "@types/react": "catalog:",
     "lexical": "catalog:",
-    "typescript": "catalog:",
-    "tailwind-merge": "catalog:",
-    "tailwindcss": "catalog:",
-    "uuid": "catalog:"
+    "react": "catalog:"
   },
   "devDependencies": {
+    "@types/react": "catalog:",
+    "typescript": "catalog:",
     "@repo/tailwind-config": "workspace:*",
+    "tailwindcss": "catalog:",
     "@repo/typescript-config": "workspace:*",
     "@tailwindcss/cli": "catalog:"
   },
   "dependencies": {
-    "react": "catalog:"
+    "uuid": "catalog:",
+    "tailwind-merge": "catalog:"
   },
   "publishConfig": {
     "access": "public"
