@@ -91,7 +91,7 @@ export class FootnoteReferenceNode extends FootnoteReferenceBase<React.ReactNode
 // ============================================================================
 
 export const convertFootnoteReferenceElement = createConvertFootnoteReferenceElement(
-	() => $createFootnoteReferenceNode(),
+	() => new FootnoteReferenceNode(),
 );
 
 let ReferenceNodeClass: typeof FootnoteReferenceNode = FootnoteReferenceNode;

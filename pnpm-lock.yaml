@@ -277,27 +277,15 @@ importers:
       '@lexical/utils':
         specifier: 'catalog:'
         version: 0.39.0
-      '@types/react':
-        specifier: 'catalog:'
-        version: 19.2.2
       lexical:
         specifier: 'catalog:'
         version: 0.39.0
-      lucide-react:
-        specifier: 'catalog:'
-        version: 0.554.0(react@19.2.0)
       react:
         specifier: 'catalog:'
         version: 19.2.0
       tailwind-merge:
         specifier: 'catalog:'
         version: 3.4.0
-      tailwindcss:
-        specifier: 'catalog:'
-        version: 4.1.16
-      typescript:
-        specifier: 'catalog:'
-        version: 5.9.2
       uuid:
         specifier: 'catalog:'
         version: 13.0.0
@@ -311,6 +299,15 @@ importers:
       '@tailwindcss/cli':
         specifier: 'catalog:'
         version: 4.1.16
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.2.2
+      tailwindcss:
+        specifier: 'catalog:'
+        version: 4.1.16
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.2
 
   packages/server:
     dependencies:

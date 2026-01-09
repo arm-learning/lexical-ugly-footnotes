@@ -87,7 +87,13 @@ export class FootnoteBlockNode extends FootnoteBlockBase<React.ReactNode> {
 // ============================================================================
 
 export const convertFootnoteBlockElement = createConvertFootnoteBlockElement(
-	(referenceId, order, blockNote) => $createFootnoteBlockNode(referenceId, order, blockNote),
+	(referenceId, order, blockNote) => {
+		const node = new FootnoteBlockNode(referenceId, blockNote);
+		if (order) {
+			node.setOrder(order);
+		}
+		return node;
+	},
 );
 
 let BlockNodeClass: typeof FootnoteBlockNode = FootnoteBlockNode;

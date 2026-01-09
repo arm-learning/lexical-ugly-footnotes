@@ -1,6 +1,10 @@
 {
     "extends": ["//"],
     "tasks": {
+      "clean": {
+        "cache": false,
+        "outputs": []
+      },
       "build": {
         "dependsOn": ["build:styles", "build:components"]
       },

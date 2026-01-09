@@ -67,7 +67,7 @@ export class FootnoteLineBreakNode extends FootnoteLineBreakBase<React.ReactNode
 // ============================================================================
 
 export const convertFootnoteLineBreakNode = createConvertFootnoteLineBreakNode(
-	() => $createFootnoteLineBreakNode(),
+	() => new FootnoteLineBreakNode(),
 );
 
 let LineBreakNodeClass: typeof FootnoteLineBreakNode = FootnoteLineBreakNode;

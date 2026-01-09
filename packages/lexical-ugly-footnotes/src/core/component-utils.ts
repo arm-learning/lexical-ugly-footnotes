@@ -17,13 +17,16 @@ import { isContainerNode, containerConfig } from "./index.js";
  * Remove a footnote by block node key.
  * This function is extracted to avoid circular dependencies with BlockNode.client.tsx
  */
-export function $removeFootnoteByBlockNodeKeyTwo(blockNodeKey: string) {
+export function $removeFootnoteByBlockNodeKey(blockNodeKey: string) {
 	const block = $getNodeByKey(blockNodeKey);
+	console.log("block", block);
 	if (!$isFootnoteBlockNode(block)) return;
 	const id = block.getReferenceId();
+	console.log("id", id);
 	if (!id) return;
-	footnoteService.removeRefAndBlock(id);
+	// footnoteService.removeRefAndBlock(id);
 	$removeFootnoteById(id);
+	console.log("removed");
 }
 
 /**
@@ -31,6 +34,7 @@ export function $removeFootnoteByBlockNodeKeyTwo(blockNodeKey: string) {
  * This is a simplified version that doesn't import from core/client.ts to avoid cycles.
  */
 function $removeFootnoteById(referenceId: string) {
+	console.log("referenceId", referenceId);
 	const root = $getRoot();
 	
 	// Remove all block nodes and reference nodes with this id using DFS

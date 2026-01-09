@@ -9,7 +9,7 @@ import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
 import { useCallback } from "react";
 import { 
-    $removeFootnoteByBlockNodeKeyTwo, 
+    $removeFootnoteByBlockNodeKey, 
     $removeFootnoteReferenceNodeByReferenceId,
     useSharedHistoryState,
 } from "lexical-ugly-footnotes/client";
@@ -32,7 +32,7 @@ const HackerNewsBlock = ({
     const onSubmit = useCallback(() => {
         editor.update(
             () => {
-                $removeFootnoteByBlockNodeKeyTwo(nodeKey);
+                $removeFootnoteByBlockNodeKey(nodeKey);
             },
             { discrete: true },
         );

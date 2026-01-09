@@ -1,12 +1,13 @@
 "use client";
 
 import { Editor } from "@repo/ui";
-import { useTransition, useState } from "react";
+import { useTransition, useState, useLayoutEffect } from "react";
 import type { LexicalEditor } from "lexical";
 import { $generateHtmlFromNodes } from "@lexical/html";
 import type { SaveResult, DemoType } from "../_actions/save-content";
 import { saveContent } from "../_actions/save-content";
 import dynamic from "next/dynamic"
+import { footnoteService } from "lexical-ugly-footnotes";
 const EditorShowcaseCssVars = dynamic(() => import("@repo/ui/editor-showcase-css-vars"), {
     ssr: false,
 });
@@ -63,6 +64,9 @@ export function UnifiedEditorClient({
             }
         });
     };
+    useLayoutEffect(() => {
+        footnoteService.clear();
+    }, []);
 
     // Select the appropriate editor component based on demoType
     const getEditorComponent = () => {

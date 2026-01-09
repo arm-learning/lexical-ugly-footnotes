@@ -123,12 +123,12 @@ export function $removeFootnoteById(referenceId: string) {
 	$syncFootnotesInParent();
 }
 
-export function $removeFootnoteByBlockNodeKey(blockNodeKey: string) {
-	const block = $getNodeByKey(blockNodeKey);
-	if (!$isFootnoteBlockNode(block)) return;
-	const id = block.getReferenceId();
-	if (id) $removeFootnoteById(id);
-}
+// export function $removeFootnoteByBlockNodeKey(blockNodeKey: string) {
+// 	const block = $getNodeByKey(blockNodeKey);
+// 	if (!$isFootnoteBlockNode(block)) return;
+// 	const id = block.getReferenceId();
+// 	if (id) $removeFootnoteById(id);
+// }
 
 export function $removeFootnoteByRefNodeKey(refNodeKey: string) {
 	const ref = $getNodeByKey(refNodeKey) as FootnoteReferenceNode | null;

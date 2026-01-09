@@ -28,13 +28,19 @@ export class DemoPage {
     }
 
     async addFootnote() {
+        // Track the count before adding
+        const countBefore = await this.page.locator('[contenteditable="true"]').count();
+
         await this.mainEditor.focus();
         // Click the footnote button
         await this.footnoteButton.click();
 
-        // Wait for the nested editor to appear (which means a new contenteditable is added)
-        // We expect at least 2 contenteditables now (main + footnote)
-        await this.page.waitForFunction(() => document.querySelectorAll('[contenteditable="true"]').length > 1);
+        // Wait for the new contenteditable to appear
+        await this.page.waitForFunction((before) => document.querySelectorAll('[contenteditable="true"]').length > before, countBefore);
+
+        // Return the index of the newly added footnote editor (last one)
+        const countAfter = await this.page.locator('[contenteditable="true"]').count();
+        return countAfter - 1;
     }
 
     async addNestedEditor() {
@@ -96,9 +102,11 @@ export class DemoPage {
     }
 
     async typeInFootnote(text: string) {
-        // The footnote editor is the second contenteditable (index 1)
-        // This avoids relying on specific classes which might change in themes
-        const footnoteEditor = this.page.locator('[contenteditable="true"]').nth(1);
+        // The footnote editor is the most recently added contenteditable
+        // When multiple footnotes exist, the last one is the newly added one
+        const allEditors = this.page.locator('[contenteditable="true"]');
+        const count = await allEditors.count();
+        const footnoteEditor = allEditors.nth(count - 1);
         await footnoteEditor.fill(text);
     }
 
@@ -116,6 +124,21 @@ export class DemoPage {
         // In preview, the footnote content is rendered.
         // We need to check if the text exists in the preview area.
         await this.page.waitForSelector(`text=${text}`);
+    }
+
+    async moveToNewLine() {
+        // Get the last footnote's contenteditable and use arrow keys to exit it
+        const allEditors = this.page.locator('[contenteditable="true"]');
+        const count = await allEditors.count();
+        const lastEditor = allEditors.nth(count - 1);
+
+        // Click at end of the last editor (which is the footnote we just typed in)
+        await lastEditor.focus();
+        await lastEditor.press('End');
+        // Press ArrowRight to move out of the footnote block
+        await lastEditor.press('ArrowRight');
+        // Press Enter to create a new paragraph in the main editor
+        await this.page.keyboard.press('Enter');
     }
 
     async verifyFootnoteElements(demoType: string) {

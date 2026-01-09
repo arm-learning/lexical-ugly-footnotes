@@ -141,9 +141,10 @@ export const createConvertFootnoteBlockElement = (
 			if (Number.isNaN(orderNumber)) {
 				throw new Error("Order is not a number");
 			}
-			if (!footnoteService.hasBlock(referenceId)) {
-				footnoteService.upsertBlock(referenceId, orderNumber);
-			}
+			// if (!footnoteService.hasBlock(referenceId)) {
+			// 	footnoteService.upsertBlock(referenceId, orderNumber);
+			// }
+			footnoteService.upsertBlock(referenceId, orderNumber);
 			return {
 				node: $createFn(referenceId, orderNumber, nestedEditor),
 			};

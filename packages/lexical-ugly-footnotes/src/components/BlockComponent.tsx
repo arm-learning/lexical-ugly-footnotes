@@ -9,7 +9,7 @@ import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection"
 import { useSharedHistoryState } from "./SharedHistoryState.js";
 import { theme } from "../nodes/BlockNode.server.js";
 import {
-	$removeFootnoteByBlockNodeKeyTwo,
+	$removeFootnoteByBlockNodeKey,
 	$removeFootnoteReferenceNodeByReferenceId,
 } from "../core/component-utils.js";
 import type { BlockComponentProps } from "../types/block.js";
@@ -82,7 +82,7 @@ const FootnoteBlockComponent = ({
   const onSubmit = () => {
     editor.update(
       () => {
-        $removeFootnoteByBlockNodeKeyTwo(nodeKey);
+        $removeFootnoteByBlockNodeKey(nodeKey);
       },
       { discrete: true },
     );
