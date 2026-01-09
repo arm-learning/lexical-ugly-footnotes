@@ -83,14 +83,9 @@ const FootnoteBlockComponent = ({
     editor.update(
       () => {
         $removeFootnoteByBlockNodeKey(nodeKey);
-      },
-      { discrete: true },
-    );
-    editor.update(
-      () => {
-        if (referenceId) {
-          $removeFootnoteReferenceNodeByReferenceId(referenceId);
-        }
+        // Note: $removeFootnoteByBlockNodeKey already removes both the block node
+        // and all reference nodes with the same referenceId, so we don't need
+        // a separate call to $removeFootnoteReferenceNodeByReferenceId
       },
       { discrete: true },
     );

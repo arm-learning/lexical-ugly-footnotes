@@ -172,9 +172,19 @@ export abstract class FootnoteReferenceBase<T> extends DecoratorNode<T> {
 
 	exportDOM(): DOMExportOutput {
 		if (!this.__reference_id) {
+			console.error("[FootnoteReferenceNode.exportDOM] Missing referenceId:", {
+				nodeKey: this.getKey(),
+				referenceId: this.__reference_id,
+				order: this.__order,
+			});
 			throw new Error("Reference ID is required");
 		}
 		if (!this.__order) {
+			console.error("[FootnoteReferenceNode.exportDOM] Missing order:", {
+				nodeKey: this.getKey(),
+				referenceId: this.__reference_id,
+				order: this.__order,
+			});
 			throw new Error("Order is required");
 		}
 		const spanElement = document.createElement("span");

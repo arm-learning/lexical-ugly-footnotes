@@ -280,9 +280,19 @@ export abstract class FootnoteBlockBase<T> extends DecoratorNode<T> {
 
 	exportDOM(): DOMExportOutput {
 		if (!this.__referenceId) {
+			console.error("[FootnoteBlockNode.exportDOM] Missing referenceId:", {
+				nodeKey: this.getKey(),
+				referenceId: this.__referenceId,
+				order: this.__order,
+			});
 			throw new Error("Node ID is required");
 		}
 		if (!this.__order) {
+			console.error("[FootnoteBlockNode.exportDOM] Missing order:", {
+				nodeKey: this.getKey(),
+				referenceId: this.__referenceId,
+				order: this.__order,
+			});
 			throw new Error("Order is required");
 		}
 		const divRootContainer = document.createElement("div");

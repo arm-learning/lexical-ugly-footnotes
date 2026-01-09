@@ -1,4 +1,4 @@
-import { memoryStore } from "@repo/store";
+import { fileStore } from "@repo/store";
 import { createHeadlessEditor } from "@lexical/headless";
 import { $generateHtmlFromNodes } from "@lexical/html";
 import {
@@ -11,6 +11,10 @@ import { HeadingNode } from "@lexical/rich-text";
 import { UnifiedFormatTabs } from "../../../_components/UnifiedFormatTabs";
 import { UnifiedViewTabs } from "../../../_components/UnifiedViewTabs";
 
+// Force dynamic rendering to prevent caching
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 interface CssVarsPreviewPageProps {
     searchParams: Promise<{ format?: string }>;
 }
@@ -22,7 +26,7 @@ export default async function CssVarsPreviewPage({
     const format = (params.format as "html" | "json") || "html";
     const demoType = "css-vars";
 
-    const content = await memoryStore.get(demoType, format);
+    const content = await fileStore.get(demoType, format);
 
     let html = "";
 

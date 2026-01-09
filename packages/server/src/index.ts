@@ -1,7 +1,7 @@
 import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
-import { memoryStore } from '@repo/store';
+import { fileStore } from '@repo/store';
 
 const app = new Hono();
 
@@ -25,7 +25,7 @@ app.get('/content/:format', async (c) => {
   }
 
   try {
-    const content = await memoryStore.get(format);
+    const content = await fileStore.get('default', format);
     return c.json({ format, content });
   } catch (error) {
     return c.json({ error: 'Failed to fetch content' }, 500);
@@ -35,7 +35,7 @@ app.get('/content/:format', async (c) => {
 // Get all content
 app.get('/content', async (c) => {
   try {
-    const content = await memoryStore.getAll();
+    const content = await fileStore.getAll('default');
     return c.json(content);
   } catch (error) {
     return c.json({ error: 'Failed to fetch content' }, 500);
@@ -58,7 +58,7 @@ app.post('/content/:format', async (c) => {
       return c.json({ error: 'Content must be a string' }, 400);
     }
 
-    await memoryStore.set(content, format);
+    await fileStore.set(content, 'default', format);
     return c.json({ success: true, format });
   } catch (error) {
     return c.json({ error: 'Failed to save content' }, 500);
@@ -71,7 +71,7 @@ app.post('/content/reset', async (c) => {
     const body = await c.req.json().catch(() => ({}));
     const { format } = body;
 
-    await memoryStore.reset(format);
+    await fileStore.reset('default', format);
     return c.json({ success: true, reset: format || 'all' });
   } catch (error) {
     return c.json({ error: 'Failed to reset content' }, 500);

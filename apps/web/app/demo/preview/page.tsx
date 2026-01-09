@@ -1,4 +1,4 @@
-import { memoryStore } from "@repo/store";
+import { fileStore } from "@repo/store";
 import { createHeadlessEditor } from "@lexical/headless";
 import { $generateHtmlFromNodes } from "@lexical/html";
 import {
@@ -8,8 +8,13 @@ import {
 } from "lexical-ugly-footnotes/server";
 import { parseHTML } from "linkedom";
 import { HeadingNode } from "@lexical/rich-text";
+import { $getRoot } from "lexical";
 import { UnifiedFormatTabs } from "../../_components/UnifiedFormatTabs";
 import { UnifiedViewTabs } from "../../_components/UnifiedViewTabs";
+
+// Force dynamic rendering to prevent caching
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 interface DemoPreviewPageProps {
     searchParams: Promise<{ format?: string }>;
@@ -22,7 +27,7 @@ export default async function DemoPreviewPage({
     const format = (params.format as "html" | "json") || "html";
     const demoType = "default";
 
-    const content = await memoryStore.get(demoType, format);
+    const content = await fileStore.get(demoType, format);
 
     let html = "";
 
@@ -64,7 +69,12 @@ export default async function DemoPreviewPage({
 
             // Generate HTML
             html = editor.read(() => {
-                return $generateHtmlFromNodes(editor, null);
+                try {
+                    return $generateHtmlFromNodes(editor, null);
+                } catch (error) {
+                    console.error("Error generating HTML from nodes:", error);
+                    throw error;
+                }
             });
         } catch (error) {
             console.error("Failed to parse JSON content:", error);
@@ -75,9 +85,8 @@ export default async function DemoPreviewPage({
             globalObj.document = prevDocument;
         }
     } else {
-        html = content;
+        html = content || "";
     }
-
     return (
         <div>
             <div className="flex items-center justify-between mb-4">

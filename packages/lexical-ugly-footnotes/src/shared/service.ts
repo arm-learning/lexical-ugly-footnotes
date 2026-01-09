@@ -93,7 +93,11 @@ export class FootnoteService {
 		}
 		// place at specific 1-based position
 		this.insertIntoDocOrderAt(id, order);
-		const final = this.indexOf(id)! + 1;
+		const idx = this.indexOf(id);
+		if (idx === undefined) {
+			throw new Error(`Failed to find index for id ${id} after inserting into doc order`);
+		}
+		const final = idx + 1;
 		this.refs.set(id, { id, order: final });
 		return final;
 	}
@@ -101,7 +105,8 @@ export class FootnoteService {
 	/** Upsert a block; default to its reference's order */
 	upsertBlock(id: RefId, order?: number): number {
 		const ref = this.refs.get(id);
-		const final = order ?? ref?.order ?? this.indexOf(id)! + 1;
+		const idx = this.indexOf(id);
+		const final = order ?? ref?.order ?? (idx !== undefined ? idx + 1 : 1);
 		this.blocks.set(id, { id, order: final });
 		return final;
 	}
@@ -158,12 +163,12 @@ export class FootnoteService {
 	}
 
 	debug() {
-		console.log({
-			refs: this.refs,
-			blocks: this.blocks,
+		return {
+			refs: Array.from(this.refs.entries()),
+			blocks: Array.from(this.blocks.entries()),
 			docOrderIds: this.docOrderIds,
-			idToIndex: this.idToIndex,
-		});
+			idToIndex: Array.from(this.idToIndex.entries()),
+		};
 	}
 }
 

@@ -19,7 +19,7 @@ import { $createFootnoteBlockNode } from "../nodes/BlockNode.client.js";
 import { $createFootnoteLineBreakNode, type FootnoteLineBreakNode } from "../nodes/LineBreakNode.client.js";
 // Import from base for type guards and base classes
 import { $isFootnoteLineBreakNode } from "../shared/nodes/LineBreak.base.js";
-import { $isFootnoteBlockNode, FootnoteBlockBase } from "../shared/nodes/Block.base.js";
+import { $isFootnoteBlockNode, type FootnoteBlockBase } from "../shared/nodes/Block.base.js";
 import { footnoteService } from "../shared/service.js";
 import { isContainerNode, containerConfig } from "./index.js";
 
@@ -79,7 +79,8 @@ export function $reorderFootnoteBlocksFromService(): void {
 	}
 
 	// Reinsert in authoritative order
-	let cursor: FootnoteLineBreakNode | FootnoteBlockBase<unknown> = delim!;
+	if (!delim) return; // Should not happen, but satisfy linter
+	let cursor: FootnoteLineBreakNode | FootnoteBlockBase<unknown> = delim;
 	ids.forEach((id, idx) => {
 		const order = idx + 1;
 		const node = byId.get(id) ?? $createFootnoteBlockNode(id, order);

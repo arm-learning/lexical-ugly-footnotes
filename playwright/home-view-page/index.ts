@@ -94,7 +94,7 @@ export class HomeViewPage {
 		this.testJobProPageTitle = page.getByRole("heading", {
 			name: "Test Job Pro",
 		});
-		this.defaultProJobPostJobTitle = page.getByText("Default Job Title");
+		this.defaultProJobPostJobTitle = page.getByText("Default Title");
 		this.testJobProPageCloseButton = page
 			.locator("div")
 			.filter({ hasText: /^Close$/ })

@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { memoryStore } from "@repo/store";
+import { fileStore } from "@repo/store";
 
 export type SaveResult = {
     success: boolean;
@@ -17,13 +17,13 @@ export async function saveContent(
     format: "html" | "json" = "html"
 ): Promise<SaveResult> {
     try {
-        await memoryStore.set(content, demoType, format);
+        await fileStore.set(content, demoType, format);
+        
         // Revalidate preview paths for the demo type
-        if (format === "html") {
-            revalidatePath(`/demo/${demoType}/preview`);
-        } else {
-            revalidatePath(`/demo/${demoType}/preview`);
-        }
+        // Revalidate both with and without format query param
+        revalidatePath(`/demo/${demoType}/preview`);
+        revalidatePath(`/demo/${demoType}/preview?format=html`);
+        revalidatePath(`/demo/${demoType}/preview?format=json`);
         return { success: true };
     } catch (error) {
         console.error(`Failed to save ${format} for ${demoType}:`, error);
@@ -38,4 +38,27 @@ export async function saveAsJson(content: string): Promise<SaveResult> {
 
 export async function saveAsHtml(content: string): Promise<SaveResult> {
     return saveContent(content, "default", "html");
+}
+
+// Reset content to defaults
+export async function resetContent(
+    demoType: DemoType = "default",
+    format?: "html" | "json"
+): Promise<SaveResult> {
+    try {
+        await fileStore.reset(demoType, format);
+        
+        // Revalidate both editor and preview paths
+        revalidatePath(`/demo/${demoType}`);
+        revalidatePath(`/demo/${demoType}?format=html`);
+        revalidatePath(`/demo/${demoType}?format=json`);
+        revalidatePath(`/demo/${demoType}/preview`);
+        revalidatePath(`/demo/${demoType}/preview?format=html`);
+        revalidatePath(`/demo/${demoType}/preview?format=json`);
+        
+        return { success: true };
+    } catch (error) {
+        console.error(`Failed to reset ${format || 'all'} for ${demoType}:`, error);
+        return { success: false, error: "Failed to reset content" };
+    }
 }

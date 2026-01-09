@@ -1,4 +1,4 @@
-import { memoryStore } from "@repo/store";
+import { fileStore } from "@repo/store";
 import { createHeadlessEditor } from "@lexical/headless";
 import { $generateHtmlFromNodes } from "@lexical/html";
 import {
@@ -12,6 +12,10 @@ import { UnifiedFormatTabs } from "../../../_components/UnifiedFormatTabs";
 import { UnifiedViewTabs } from "../../../_components/UnifiedViewTabs";
 import { NestedFootnoteDemoNode } from "../../../../../../packages/ui/src/nodes/NestedFootnoteDemoNode.server";
 
+// Force dynamic rendering to prevent caching
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 interface NestedPreviewPageProps {
     searchParams: Promise<{ format?: string }>;
 }
@@ -23,7 +27,7 @@ export default async function NestedPreviewPage({
     const format = (params.format as "html" | "json") || "html";
     const demoType = "nested";
 
-    const content = await memoryStore.get(demoType, format);
+    const content = await fileStore.get(demoType, format);
 
     let html = "";
 

@@ -16,7 +16,8 @@
     "build": "tsc",
     "check-types": "tsc --noEmit",
     "dev": "tsc --watch",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "clean:store": "node scripts/clean-store.js"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

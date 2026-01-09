@@ -21,7 +21,7 @@ import {
 import { useEffect } from "react";
 import { $createFootnoteBlockNode, FootnoteBlockNode } from "../nodes/BlockNode.client.js";
 import { $createFootnoteReferenceNode, FootnoteReferenceNode } from "../nodes/ReferenceNode.client.js";
-import { $mirrorOrdersFromServiceIntoCurrentEditor, $nextFootnoteOrderWithIndex, configureFootnoteContainer, footnoteService } from "../core/index.js";
+import { $mirrorOrdersFromServiceIntoCurrentEditor, $nextFootnoteOrderWithIndex, configureFootnoteContainer, footnoteService, $rebuildFootnoteServiceFromEditor } from "../core/index.js";
 import {
 	$removeFootnoteByRefNodeKey,
 	$reorderFootnoteBlocksFromService,
@@ -89,6 +89,13 @@ export const FootnotePlugin = ({
 				"Footnote Plugin: FootnoteBlockNode, FootnoteReferenceNode not registered on editor",
 			);
 		}
+
+		// Rebuild service state from editor on initial load
+		// This is critical when switching from preview to editor mode
+		// We rebuild immediately when the plugin mounts to ensure service is in sync
+		editor.update(() => {
+			$rebuildFootnoteServiceFromEditor();
+		});
 
 		return mergeRegister(
 			editor.registerCommand(
@@ -297,13 +304,21 @@ export const FootnotePlugin = ({
 								}
 							}
 						});
-						for (const referenceId of destroyedNodes) {
+						// Only process referenceIds that are still in the service.
+						// If $removeFootnoteById already updated the service, this will be a no-op.
+						const toProcess = destroyedNodes.filter(id => 
+							footnoteService.hasReference(id) || footnoteService.hasBlock(id)
+						);
+						for (const referenceId of toProcess) {
 							footnoteService.removeRefAndBlock(referenceId);
 						}
-						editor.update(() => {
-							$reorderAllReferencesFromService();
-							$reorderFootnoteBlocksFromService();
-						});
+						// Only reorder if we actually processed any nodes
+						if (toProcess.length > 0) {
+							editor.update(() => {
+								$reorderAllReferencesFromService();
+								$reorderFootnoteBlocksFromService();
+							});
+						}
 					}
 				},
 			),

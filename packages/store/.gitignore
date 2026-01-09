@@ -1,0 +1,6 @@
+# Store directory (editor state files)
+.store
+
+# Build output
+dist
+*.tsbuildinfo

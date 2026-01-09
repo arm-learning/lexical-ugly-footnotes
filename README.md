@@ -1,4 +1,4 @@
-# Lexical Ugly Footnotes
+# Lexical Ugly Footnotes - **Experimental**
 
 ## Goals
 
@@ -72,23 +72,27 @@ const FootnoteButton = () => {
 ### TODOS
 
 - [ ] chore: cleanup layout of tabs
+- [ ] chore: cleanup UI in general
 - [ ] chore: replace vite stand in with vite based framework like tanstack start
 - [ ] test: increase depth of playwright tests
 - [ ] minor enhancement: add ability to handle multiple decorators
 - [ ] major: add shared history
-- [ ] bug: deletion of nodes is extremely buggy
+- [ ] major: move away from modules
+- [ ] major: move away from storing state in html and use lexical state apis
+- [ ] minor: move away from uuidv7 and use a more space efficient id
+- [ ] bug: deletion of nodes may be extremely buggy
 - [ ] bug: history is extremely buggy
 
 - [ ] fix dependencies
   - [x] rename variables
   - [x] rerun tests
   - [x] circular import check
-  - [ ] fix deletion bug
+  - [x] fix deletion bug
   - [ ] manually go through each test
     - [ ] test tests serially
-  - [ ] update readme to experimental
-  - [ ] update todos to include moving away from modules
-  - [ ] update readme to document moving to state apis / move away from uuids
+  - [x] update readme to experimental
+  - [x] update todos to include moving away from modules
+  - [x] update readme to document moving to state apis / move away from uuids
   - [ ] fix duplicate build
   - [ ] run lint
   - [ ] clean core

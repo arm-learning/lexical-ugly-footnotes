@@ -30,7 +30,9 @@ function $prevInDocument(node: LexicalNode | null): LexicalNode | null {
 	if (prev) {
 		let n: LexicalNode = prev;
 		while ($isElementNode(n) && n.getLastChild()) {
-			n = n.getLastChild()!;
+			const lastChild = n.getLastChild();
+			if (!lastChild) break;
+			n = lastChild;
 		}
 		return n;
 	}
@@ -69,6 +71,37 @@ export function $rebuildFootnoteDocIndex(): void {
 
 	footnoteService.setDocOrder(refs.map((r) => r.id));
 	refs.forEach((r, i) => r.node.setOrder(i + 1));
+}
+
+/** Rebuild blocks in the service from existing block nodes in the editor */
+export function $rebuildFootnoteBlocksInService(): void {
+	const root = $getRoot();
+	const nodes = $dfs(root);
+	const docOrderIds = new Set(footnoteService.getDocOrderIds());
+	
+	for (const { node } of nodes) {
+		if ($isFootnoteBlockNode(node)) {
+			const id = node.getReferenceId();
+			const order = node.getOrder();
+			// Only add blocks that have a corresponding reference in doc order
+			// This prevents orphaned blocks from being added
+			if (id && order && docOrderIds.has(id)) {
+				footnoteService.upsertBlock(id, order);
+			}
+		}
+	}
+}
+
+/** Rebuild the entire footnote service state from editor nodes */
+export function $rebuildFootnoteServiceFromEditor(): void {
+	// Clear the service first to avoid stale entries
+	footnoteService.clear();
+	
+	// Rebuild references and doc order from reference nodes
+	$rebuildFootnoteDocIndex();
+	
+	// Rebuild blocks from block nodes
+	$rebuildFootnoteBlocksInService();
 }
 
 export interface FootnoteContainerConfig<TContainer extends LexicalNode = LexicalNode> {

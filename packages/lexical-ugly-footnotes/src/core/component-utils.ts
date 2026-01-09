@@ -19,14 +19,10 @@ import { isContainerNode, containerConfig } from "./index.js";
  */
 export function $removeFootnoteByBlockNodeKey(blockNodeKey: string) {
 	const block = $getNodeByKey(blockNodeKey);
-	console.log("block", block);
 	if (!$isFootnoteBlockNode(block)) return;
 	const id = block.getReferenceId();
-	console.log("id", id);
 	if (!id) return;
-	// footnoteService.removeRefAndBlock(id);
 	$removeFootnoteById(id);
-	console.log("removed");
 }
 
 /**
@@ -34,7 +30,11 @@ export function $removeFootnoteByBlockNodeKey(blockNodeKey: string) {
  * This is a simplified version that doesn't import from core/client.ts to avoid cycles.
  */
 function $removeFootnoteById(referenceId: string) {
-	console.log("referenceId", referenceId);
+	// IMPORTANT: Update the service FIRST before removing nodes.
+	// This ensures that when the mutation listener fires and calls
+	// $reorderFootnoteBlocksFromService(), the service state is already correct.
+	footnoteService.removeRefAndBlock(referenceId);
+	
 	const root = $getRoot();
 	
 	// Remove all block nodes and reference nodes with this id using DFS
