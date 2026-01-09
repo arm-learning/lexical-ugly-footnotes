@@ -31,10 +31,22 @@ jobs:
           node-version: '20'
           cache: 'pnpm'
           registry-url: https://registry.npmjs.org/
+          always-auth: true
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       
+      - name: Configure pnpm auth
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> ~/.npmrc
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      
+      - name: Verify npm auth
+        run: npm whoami
+
       - name: Create Release Pull Request
         uses: changesets/action@v1
         with:
