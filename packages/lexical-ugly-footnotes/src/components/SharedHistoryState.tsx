@@ -1,36 +1,35 @@
 import {
-	createEmptyHistoryState,
-	type HistoryState,
+  type HistoryState,
+  createEmptyHistoryState,
 } from "@lexical/react/LexicalHistoryPlugin";
-import { createContext, type ReactNode, useContext, useMemo } from "react";
+import { type ReactNode, createContext, useContext, useMemo } from "react";
 
 type SharedHistoryStateContext = {
-	historyState: HistoryState;
+  historyState: HistoryState;
 };
 
 const Context = createContext<SharedHistoryStateContext | null>(null);
 
 interface SharedHistoryContextProps {
-	children: ReactNode;
+  children: ReactNode;
 }
 
 export const SharedHistoryContext = ({
-	children,
+  children,
 }: SharedHistoryContextProps) => {
-	const history = useMemo(
-		() => ({ historyState: createEmptyHistoryState() }),
-		[],
-	);
-	return <Context.Provider value={history}>{children}</Context.Provider>;
+  const history = useMemo(
+    () => ({ historyState: createEmptyHistoryState() }),
+    [],
+  );
+  return <Context.Provider value={history}>{children}</Context.Provider>;
 };
 
-export const useSharedHistoryState =
-	(): SharedHistoryStateContext => {
-		const context = useContext(Context);
-		if (!context) {
-			throw new Error(
-				"useSharedHistoryState must be used within a SharedHistoryContext provider"
-			);
-		}
-		return context;
-	};
+export const useSharedHistoryState = (): SharedHistoryStateContext => {
+  const context = useContext(Context);
+  if (!context) {
+    throw new Error(
+      "useSharedHistoryState must be used within a SharedHistoryContext provider",
+    );
+  }
+  return context;
+};

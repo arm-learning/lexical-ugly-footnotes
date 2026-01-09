@@ -1,12 +1,16 @@
 "use client";
+import { $generateNodesFromDOM } from "@lexical/html";
 import {
-  LexicalComposer,
   type InitialConfigType,
+  LexicalComposer,
 } from "@lexical/react/LexicalComposer";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
+import { EditorRefPlugin } from "@lexical/react/LexicalEditorRefPlugin";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
+import { $createHeadingNode, HeadingNode } from "@lexical/rich-text";
+import { $createTextNode, $getRoot, type LexicalEditor } from "lexical";
 import {
   FootnoteBlockNode,
   FootnoteLineBreakNode,
@@ -14,21 +18,20 @@ import {
   FootnoteReferenceNode,
   SharedHistoryContext,
 } from "lexical-ugly-footnotes/client";
-import { EditorRefPlugin } from "@lexical/react/LexicalEditorRefPlugin";
-import FootnoteButton from "./components/FootnoteButton.js";
 import { useRef } from "react";
-import { $createTextNode, $getRoot, type LexicalEditor } from "lexical";
-import { $createHeadingNode, HeadingNode } from "@lexical/rich-text";
-import { $generateNodesFromDOM } from "@lexical/html";
-import { hackerNewsBlockReplacement, HackerNewsBlockNode } from "./components/HackerNewsBlock.js";
+import FootnoteButton from "./components/FootnoteButton.js";
 import {
-  HackerNewsReferenceNode,
-  hackerNewsReferenceReplacement,
-} from "./components/HackerNewsReference.js";
+  HackerNewsBlockNode,
+  hackerNewsBlockReplacement,
+} from "./components/HackerNewsBlock.js";
 import {
   HackerNewsLineBreakNode,
   hackerNewsLineBreakReplacement,
 } from "./components/HackerNewsLineBreak.js";
+import {
+  HackerNewsReferenceNode,
+  hackerNewsReferenceReplacement,
+} from "./components/HackerNewsReference.js";
 
 interface EditorShowcaseHackerNewsProps {
   submitHandler: (editor: LexicalEditor) => void;
@@ -43,7 +46,10 @@ function onError(error: Error) {
   console.error(error);
 }
 
-export const EditorShowcaseHackerNews = ({ submitHandler, content }: EditorShowcaseHackerNewsProps) => {
+export const EditorShowcaseHackerNews = ({
+  submitHandler,
+  content,
+}: EditorShowcaseHackerNewsProps) => {
   const editorRef = useRef<LexicalEditor | null>(null);
   const initialConfig = {
     namespace: "Showcase-HackerNews",
@@ -120,4 +126,3 @@ export const EditorShowcaseHackerNews = ({ submitHandler, content }: EditorShowc
 };
 
 export default EditorShowcaseHackerNews;
-

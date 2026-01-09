@@ -1,12 +1,16 @@
 "use client";
+import { $generateNodesFromDOM } from "@lexical/html";
 import {
-  LexicalComposer,
   type InitialConfigType,
+  LexicalComposer,
 } from "@lexical/react/LexicalComposer";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
+import { EditorRefPlugin } from "@lexical/react/LexicalEditorRefPlugin";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
+import { $createHeadingNode, HeadingNode } from "@lexical/rich-text";
+import { $createTextNode, $getRoot, type LexicalEditor } from "lexical";
 import {
   FootnoteBlockNode,
   FootnoteLineBreakNode,
@@ -14,12 +18,8 @@ import {
   FootnoteReferenceNode,
   SharedHistoryContext,
 } from "lexical-ugly-footnotes/client";
-import { EditorRefPlugin } from "@lexical/react/LexicalEditorRefPlugin";
-import FootnoteButton from "./components/FootnoteButton.js";
 import { useRef } from "react";
-import { $createTextNode, $getRoot, type LexicalEditor } from "lexical";
-import { $createHeadingNode, HeadingNode } from "@lexical/rich-text";
-import { $generateNodesFromDOM } from "@lexical/html";
+import FootnoteButton from "./components/FootnoteButton.js";
 
 interface EditorShowcaseOverrideProps {
   submitHandler: (editor: LexicalEditor) => void;
@@ -34,7 +34,10 @@ function onError(error: Error) {
   console.error(error);
 }
 
-export const EditorShowcaseOverride = ({ submitHandler, content }: EditorShowcaseOverrideProps) => {
+export const EditorShowcaseOverride = ({
+  submitHandler,
+  content,
+}: EditorShowcaseOverrideProps) => {
   const editorRef = useRef<LexicalEditor | null>(null);
   const initialConfig = {
     namespace: "Showcase-Override",
@@ -77,7 +80,9 @@ export const EditorShowcaseOverride = ({ submitHandler, content }: EditorShowcas
 
   return (
     <div className="showcase-editor-override">
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
         .showcase-editor-override .luf-block {
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           padding: 1.5rem;
@@ -122,7 +127,9 @@ export const EditorShowcaseOverride = ({ submitHandler, content }: EditorShowcas
         .showcase-editor-override .luf-reference-sup:hover {
           background: rgba(102, 126, 234, 0.2);
         }
-      `}} />
+      `,
+        }}
+      />
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -151,6 +158,6 @@ export const EditorShowcaseOverride = ({ submitHandler, content }: EditorShowcas
       </form>
     </div>
   );
-}
+};
 
 export default EditorShowcaseOverride;

@@ -1,12 +1,16 @@
 "use client";
+import { $generateNodesFromDOM } from "@lexical/html";
 import {
-  LexicalComposer,
   type InitialConfigType,
+  LexicalComposer,
 } from "@lexical/react/LexicalComposer";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
+import { EditorRefPlugin } from "@lexical/react/LexicalEditorRefPlugin";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
+import { $createHeadingNode, HeadingNode } from "@lexical/rich-text";
+import { $createTextNode, $getRoot, type LexicalEditor } from "lexical";
 import {
   FootnoteBlockNode,
   FootnoteLineBreakNode,
@@ -14,22 +18,18 @@ import {
   FootnoteReferenceNode,
   SharedHistoryContext,
 } from "lexical-ugly-footnotes/client";
-import { EditorRefPlugin } from "@lexical/react/LexicalEditorRefPlugin";
-import FootnoteButton from "./components/FootnoteButton.js";
-import FootnoteHotkeyPlugin from "./components/FootnoteHotkeyPlugin.js";
 import { useRef } from "react";
-import { $createTextNode, $getRoot, type LexicalEditor } from "lexical";
-import { $createHeadingNode, HeadingNode } from "@lexical/rich-text";
-import { $generateNodesFromDOM } from "@lexical/html";
-import { blockReplacement, CustomBlockNode } from "./components/CustomBlock.js";
-import {
-  CustomReferenceNode,
-  referenceReplacement,
-} from "./components/CustomReference.js";
+import { CustomBlockNode, blockReplacement } from "./components/CustomBlock.js";
 import {
   CustomLineBreakNode,
   lineBreakReplacement,
 } from "./components/CustomLineBreak.js";
+import {
+  CustomReferenceNode,
+  referenceReplacement,
+} from "./components/CustomReference.js";
+import FootnoteButton from "./components/FootnoteButton.js";
+import FootnoteHotkeyPlugin from "./components/FootnoteHotkeyPlugin.js";
 
 interface EditorCustomProps {
   submitHandler: (editor: LexicalEditor) => void;
@@ -45,7 +45,7 @@ function onError(error: Error) {
 }
 
 export function EditorCustom({ submitHandler, content }: EditorCustomProps) {
-    console.log("🎉 EditorCustom rendered!");
+  console.log("🎉 EditorCustom rendered!");
   const editorRef = useRef<LexicalEditor | null>(null);
   const initialConfig = {
     namespace: "MyEditor-Custom",

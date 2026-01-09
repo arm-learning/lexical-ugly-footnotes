@@ -4,9 +4,8 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
-    "lint": "biome lint .",
+    "lint": "biome check --write .",
     "check-types": "turbo run check-types",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "test": "playwright test",
     "test:ui": "playwright test --ui",
     "test:debug": "playwright test --debug",

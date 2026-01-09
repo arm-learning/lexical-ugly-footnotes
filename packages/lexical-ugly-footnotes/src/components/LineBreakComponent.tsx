@@ -1,8 +1,8 @@
 import { useEffect, useMemo } from "react";
-import { useNodeFocus } from "../hooks/useNodeFocus.js";
-import { useNodeActive } from "../hooks/useNodeActive.js";
-import { useEditorKeyDown } from "../hooks/useEditorKeyDown.js";
 import { twMerge } from "tailwind-merge";
+import { useEditorKeyDown } from "../hooks/useEditorKeyDown.js";
+import { useNodeActive } from "../hooks/useNodeActive.js";
+import { useNodeFocus } from "../hooks/useNodeFocus.js";
 import type { LineBreakComponentProps } from "../types/line-break.js";
 
 const LineBreak = ({ nodeKey, classNames }: LineBreakComponentProps) => {

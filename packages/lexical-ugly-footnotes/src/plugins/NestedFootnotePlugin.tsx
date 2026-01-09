@@ -1,260 +1,263 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
 import {
-	$getChildCaretOrSelf,
-	$getNodeByKey,
-	$getRoot,
-	$getSelection,
-	$getSiblingCaret,
-	$isRangeSelection,
-	$isRootNode,
-	$isTextNode,
-	type CaretDirection,
-	COMMAND_PRIORITY_LOW,
-	COMMAND_PRIORITY_NORMAL,
-	type LexicalEditor,
-	type NodeCaret,
-	ParagraphNode,
+  $getChildCaretOrSelf,
+  $getNodeByKey,
+  $getRoot,
+  $getSelection,
+  $getSiblingCaret,
+  $isRangeSelection,
+  $isRootNode,
+  $isTextNode,
+  COMMAND_PRIORITY_LOW,
+  COMMAND_PRIORITY_NORMAL,
+  type CaretDirection,
+  type LexicalEditor,
+  type NodeCaret,
+  ParagraphNode,
 } from "lexical";
 import { useEffect } from "react";
-import {
-	INSERT_FOOTNOTE_BLOCK_COMMAND,
-	RECONCILE_FOOTNOTES_COMMAND,
-	UPDATE_FOOTNOTE_ORDERS_COMMAND,
-	REMOVE_FOOTNOTE_REFERENCE_NODE_BY_REFERENCE_ID_COMMAND,
-} from "../shared/constants/commands.js";
-import { footnoteService, isEditorActive, nextOrderForChildInsertion } from "../core/index.js";
 import { v7 as uuidv7 } from "uuid";
-import { $createFootnoteReferenceNode, FootnoteReferenceNode } from "../nodes/ReferenceNode.client.js";
+import {
+  footnoteService,
+  isEditorActive,
+  nextOrderForChildInsertion,
+} from "../core/index.js";
+import {
+  $createFootnoteReferenceNode,
+  FootnoteReferenceNode,
+} from "../nodes/ReferenceNode.client.js";
+import {
+  INSERT_FOOTNOTE_BLOCK_COMMAND,
+  RECONCILE_FOOTNOTES_COMMAND,
+  REMOVE_FOOTNOTE_REFERENCE_NODE_BY_REFERENCE_ID_COMMAND,
+  UPDATE_FOOTNOTE_ORDERS_COMMAND,
+} from "../shared/constants/commands.js";
 
 interface NestedFootnotePluginProps {
-	editor: LexicalEditor;
-	nodeKey: string;
+  editor: LexicalEditor;
+  nodeKey: string;
 }
 
 export const NestedFootnotePlugin = ({
-	editor,
-	nodeKey,
+  editor,
+  nodeKey,
 }: NestedFootnotePluginProps) => {
-	const [nestedEditor] = useLexicalComposerContext();
-	useEffect(() => {
-		return mergeRegister(
-			editor.registerCommand(
-				INSERT_FOOTNOTE_BLOCK_COMMAND,
-				() => {
+  const [nestedEditor] = useLexicalComposerContext();
+  useEffect(() => {
+    return mergeRegister(
+      editor.registerCommand(
+        INSERT_FOOTNOTE_BLOCK_COMMAND,
+        () => {
+          let isHandled = false;
+          nestedEditor.update(
+            () => {
+              const isActive = isEditorActive(nestedEditor);
 
-					let isHandled = false;
-					nestedEditor.update(
-						() => {
-							const isActive = isEditorActive(nestedEditor);
+              if (!isActive) {
+                isHandled = false;
+                return true;
+              }
+              const selection = $getSelection();
+              if (!$isRangeSelection(selection)) {
+                isHandled = false;
+                return true;
+              }
 
-							if (!isActive) {
-								isHandled = false;
-								return true;
-							}
-							const selection = $getSelection();
-							if (!$isRangeSelection(selection)) {
-								isHandled = false;
-								return true;
-							}
+              const anchorNode = selection.anchor.getNode();
+              if (anchorNode instanceof ParagraphNode) {
+                if (
+                  $isRootNode(anchorNode.getParent()) &&
+                  anchorNode.getChildren().length === 0
+                ) {
+                  anchorNode.selectEnd();
+                  return true;
+                }
+              }
+              const referenceId = uuidv7();
 
-							const anchorNode = selection.anchor.getNode();
-							if (anchorNode instanceof ParagraphNode) {
-								if (
-									$isRootNode(anchorNode.getParent()) &&
-									anchorNode.getChildren().length === 0
-								) {
+              const order = nextOrderForChildInsertion(
+                anchorNode,
+                editor,
+                nodeKey,
+              );
 
-									anchorNode.selectEnd();
-									return true;
-								}
-							}
-							const referenceId = uuidv7();
+              footnoteService.upsertReference(referenceId, order);
+              footnoteService.upsertBlock(referenceId, order);
 
-							const order = nextOrderForChildInsertion(
-								anchorNode,
-								editor,
-								nodeKey,
-							);
+              const footnoteReferenceNode = $createFootnoteReferenceNode(
+                referenceId,
+                order,
+              );
 
-							footnoteService.upsertReference(referenceId, order);
-							footnoteService.upsertBlock(referenceId, order);
+              if ($isTextNode(anchorNode)) {
+                const offset = selection.anchor.offset;
+                const text = anchorNode.getTextContent();
+                if (offset > 0 && offset < anchorNode.getTextContentSize()) {
+                  const lastSpaceBeforeCursor = text.lastIndexOf(
+                    " ",
+                    offset - 1,
+                  );
 
-							const footnoteReferenceNode = $createFootnoteReferenceNode(
-								referenceId,
-								order,
-							);
+                  if (lastSpaceBeforeCursor !== -1) {
+                    const nextSpace = text.indexOf(" ", offset);
+                    const splitPosition = nextSpace !== -1 ? nextSpace : offset;
+                    const [beforeNode, afterNode] =
+                      anchorNode.splitText(splitPosition);
+                    if (beforeNode?.getTextContent().endsWith(" ")) {
+                      beforeNode?.setTextContent(
+                        beforeNode?.getTextContent().trimEnd(),
+                      );
+                    }
+                    beforeNode?.insertAfter(footnoteReferenceNode);
+                    if (!afterNode?.getTextContent().startsWith(" ")) {
+                      afterNode?.setTextContent(
+                        ` ${afterNode.getTextContent()}`,
+                      );
+                    }
+                    if (afterNode) {
+                      footnoteReferenceNode.insertAfter(afterNode);
+                    }
+                  } else {
+                    const [beforeNode, afterNode] =
+                      anchorNode.splitText(offset);
+                    beforeNode?.insertAfter(footnoteReferenceNode);
+                    if (afterNode) {
+                      footnoteReferenceNode.insertAfter(afterNode);
+                    }
+                  }
+                } else {
+                  anchorNode.insertAfter(footnoteReferenceNode);
+                }
+                isHandled = true;
+              }
+            },
+            { discrete: true },
+          );
+          if (isHandled) {
+            editor.dispatchCommand(RECONCILE_FOOTNOTES_COMMAND, undefined);
+            return true;
+          }
 
-							if ($isTextNode(anchorNode)) {
-								const offset = selection.anchor.offset;
-								const text = anchorNode.getTextContent();
-								if (offset > 0 && offset < anchorNode.getTextContentSize()) {
-									const lastSpaceBeforeCursor = text.lastIndexOf(
-										" ",
-										offset - 1,
-									);
+          return isHandled;
+        },
+        COMMAND_PRIORITY_NORMAL,
+      ),
+    );
+  }, [editor, nestedEditor, nodeKey]);
 
-									if (lastSpaceBeforeCursor !== -1) {
-										const nextSpace = text.indexOf(" ", offset);
-										const splitPosition = nextSpace !== -1 ? nextSpace : offset;
-										const [beforeNode, afterNode] =
-											anchorNode.splitText(splitPosition);
-										if (beforeNode?.getTextContent().endsWith(" ")) {
-											beforeNode?.setTextContent(
-												beforeNode?.getTextContent().trimEnd(),
-											);
-										}
-										beforeNode?.insertAfter(footnoteReferenceNode);
-										if (!afterNode?.getTextContent().startsWith(" ")) {
-											afterNode?.setTextContent(
-												` ${afterNode.getTextContent()}`,
-											);
-										}
-                                        if (afterNode) {
-											footnoteReferenceNode.insertAfter(afterNode);
-										}
-									} else {
-										const [beforeNode, afterNode] =
-											anchorNode.splitText(offset);
-										beforeNode?.insertAfter(footnoteReferenceNode);
-                                        if (afterNode) {
-											footnoteReferenceNode.insertAfter(afterNode);
-										}
+  useEffect(() => {
+    return mergeRegister(
+      nestedEditor.registerCommand(
+        REMOVE_FOOTNOTE_REFERENCE_NODE_BY_REFERENCE_ID_COMMAND,
+        (targetReferenceId) => {
+          nestedEditor.update(
+            () => {
+              const childRoot = $getRoot();
 
-									}
-								} else {
-									anchorNode.insertAfter(footnoteReferenceNode);
-								}
-								isHandled = true;
-							}
-						},
-						{ discrete: true },
-					);
-					if (isHandled) {
-						editor.dispatchCommand(RECONCILE_FOOTNOTES_COMMAND, undefined);
-						return true;
-					}
+              let childCaret: NodeCaret<"next"> | null = $getChildCaretOrSelf(
+                $getSiblingCaret(childRoot, "next"),
+              );
 
-					return isHandled;
-				},
-				COMMAND_PRIORITY_NORMAL,
-			),
-		);
-	}, [editor, nestedEditor, nodeKey]);
+              function childStep<D extends CaretDirection>(
+                currentCaret: NodeCaret<D>,
+              ): null | NodeCaret<D> {
+                const nextCaret = currentCaret.getAdjacentCaret();
+                return (
+                  nextCaret?.getChildCaret() ||
+                  nextCaret ||
+                  currentCaret.getParentCaret("root")
+                );
+              }
 
-	useEffect(() => {
-		return mergeRegister(
-			nestedEditor.registerCommand(
-				REMOVE_FOOTNOTE_REFERENCE_NODE_BY_REFERENCE_ID_COMMAND,
-				(targetReferenceId) => {
-					nestedEditor.update(
-						() => {
-							const childRoot = $getRoot();
+              for (; childCaret !== null; childCaret = childStep(childCaret)) {
+                const childNodeAt = childCaret.getNodeAtCaret();
+                if (!childNodeAt) continue;
 
-							let childCaret: NodeCaret<"next"> | null = $getChildCaretOrSelf(
-								$getSiblingCaret(childRoot, "next"),
-							);
+                if (childNodeAt instanceof FootnoteReferenceNode) {
+                  const referenceId = childNodeAt.getReferenceId();
+                  if (referenceId === targetReferenceId) {
+                    childNodeAt.remove();
+                  }
+                }
+              }
+            },
+            { discrete: true },
+          );
+          return true;
+        },
+        COMMAND_PRIORITY_LOW,
+      ),
+      nestedEditor.registerCommand(
+        UPDATE_FOOTNOTE_ORDERS_COMMAND,
+        () => {
+          nestedEditor.update(
+            () => {
+              const childRoot = $getRoot();
 
-							function childStep<D extends CaretDirection>(
-								currentCaret: NodeCaret<D>,
-							): null | NodeCaret<D> {
-								const nextCaret = currentCaret.getAdjacentCaret();
-								return (
-									nextCaret?.getChildCaret() ||
-									nextCaret ||
-									currentCaret.getParentCaret("root")
-								);
-							}
+              let childCaret: NodeCaret<"next"> | null = $getChildCaretOrSelf(
+                $getSiblingCaret(childRoot, "next"),
+              );
 
-							for (; childCaret !== null; childCaret = childStep(childCaret)) {
-								const childNodeAt = childCaret.getNodeAtCaret();
-								if (!childNodeAt) continue;
+              function childStep<D extends CaretDirection>(
+                currentCaret: NodeCaret<D>,
+              ): null | NodeCaret<D> {
+                const nextCaret = currentCaret.getAdjacentCaret();
+                return (
+                  nextCaret?.getChildCaret() ||
+                  nextCaret ||
+                  currentCaret.getParentCaret("root")
+                );
+              }
 
-								if (childNodeAt instanceof FootnoteReferenceNode) {
-									const referenceId = childNodeAt.getReferenceId();
-									if (referenceId === targetReferenceId) {
-										childNodeAt.remove();
-									}
-								}
-							}
-						},
-						{ discrete: true },
-					);
-					return true;
-				},
-				COMMAND_PRIORITY_LOW,
-			),
-			nestedEditor.registerCommand(
-				UPDATE_FOOTNOTE_ORDERS_COMMAND,
-				() => {
-					nestedEditor.update(
-						() => {
-							const childRoot = $getRoot();
+              for (; childCaret !== null; childCaret = childStep(childCaret)) {
+                const childNodeAt = childCaret.getNodeAtCaret();
+                if (!childNodeAt) continue;
 
-							let childCaret: NodeCaret<"next"> | null = $getChildCaretOrSelf(
-								$getSiblingCaret(childRoot, "next"),
-							);
+                if (childNodeAt instanceof FootnoteReferenceNode) {
+                  const referenceId = childNodeAt.getReferenceId();
+                  if (!referenceId) continue;
+                  const idx = footnoteService.indexOf(referenceId);
+                  if (idx !== undefined) childNodeAt.setOrder(idx + 1);
+                }
+              }
+            },
+            { discrete: true },
+          );
+          return true;
+        },
+        COMMAND_PRIORITY_LOW,
+      ),
+      nestedEditor.registerMutationListener(
+        FootnoteReferenceNode,
+        (mutatedNodes, { prevEditorState, dirtyLeaves, updateTags }) => {
+          const destroyedKeys = Array.from(mutatedNodes.entries())
+            .filter(([_, mutation]) => mutation === "destroyed")
+            .map(([key]) => key);
 
-							function childStep<D extends CaretDirection>(
-								currentCaret: NodeCaret<D>,
-							): null | NodeCaret<D> {
-								const nextCaret = currentCaret.getAdjacentCaret();
-								return (
-									nextCaret?.getChildCaret() ||
-									nextCaret ||
-									currentCaret.getParentCaret("root")
-								);
-							}
-
-							for (; childCaret !== null; childCaret = childStep(childCaret)) {
-								const childNodeAt = childCaret.getNodeAtCaret();
-								if (!childNodeAt) continue;
-
-								if (childNodeAt instanceof FootnoteReferenceNode) {
-									const referenceId = childNodeAt.getReferenceId();
-									if (!referenceId) continue;
-									const idx = footnoteService.indexOf(referenceId);
-									if (idx !== undefined) childNodeAt.setOrder(idx + 1);
-								}
-							}
-						},
-						{ discrete: true },
-					);
-					return true;
-				},
-				COMMAND_PRIORITY_LOW,
-			),
-			nestedEditor.registerMutationListener(
-				FootnoteReferenceNode,
-				(mutatedNodes, { prevEditorState, dirtyLeaves, updateTags }) => {
-					const destroyedKeys = Array.from(mutatedNodes.entries())
-						.filter(([_, mutation]) => mutation === "destroyed")
-						.map(([key]) => key);
-
-					if (destroyedKeys.length > 0) {
-						const destroyedNodes: string[] = [];
-						prevEditorState.read(() => {
-							for (const key of destroyedKeys) {
-								const node = $getNodeByKey(key);
-								if (node instanceof FootnoteReferenceNode) {
-									const referenceId = node.getReferenceId();
-									if (referenceId) {
-										destroyedNodes.push(referenceId);
-									}
-								}
-							}
-						});
-						for (const referenceId of destroyedNodes) {
-							footnoteService.removeRefAndBlock(referenceId);
-						};
-						editor.dispatchCommand(RECONCILE_FOOTNOTES_COMMAND, undefined);
-
-					}
-				},
-			),
-		);
-	}, [nestedEditor, editor]);
-	return null;
+          if (destroyedKeys.length > 0) {
+            const destroyedNodes: string[] = [];
+            prevEditorState.read(() => {
+              for (const key of destroyedKeys) {
+                const node = $getNodeByKey(key);
+                if (node instanceof FootnoteReferenceNode) {
+                  const referenceId = node.getReferenceId();
+                  if (referenceId) {
+                    destroyedNodes.push(referenceId);
+                  }
+                }
+              }
+            });
+            for (const referenceId of destroyedNodes) {
+              footnoteService.removeRefAndBlock(referenceId);
+            }
+            editor.dispatchCommand(RECONCILE_FOOTNOTES_COMMAND, undefined);
+          }
+        },
+      ),
+    );
+  }, [nestedEditor, editor]);
+  return null;
 };
 
 export default NestedFootnotePlugin;

@@ -1,12 +1,16 @@
 "use client";
+import { $generateNodesFromDOM } from "@lexical/html";
 import {
-  LexicalComposer,
   type InitialConfigType,
+  LexicalComposer,
 } from "@lexical/react/LexicalComposer";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
+import { EditorRefPlugin } from "@lexical/react/LexicalEditorRefPlugin";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
+import { $createHeadingNode, HeadingNode } from "@lexical/rich-text";
+import { $createTextNode, $getRoot, type LexicalEditor } from "lexical";
 import {
   FootnoteBlockNode,
   FootnoteLineBreakNode,
@@ -14,12 +18,8 @@ import {
   FootnoteReferenceNode,
   SharedHistoryContext,
 } from "lexical-ugly-footnotes/client";
-import { EditorRefPlugin } from "@lexical/react/LexicalEditorRefPlugin";
-import FootnoteButton from "./components/FootnoteButton.js";
 import { useRef } from "react";
-import { $createTextNode, $getRoot, type LexicalEditor } from "lexical";
-import { $createHeadingNode, HeadingNode } from "@lexical/rich-text";
-import { $generateNodesFromDOM } from "@lexical/html";
+import FootnoteButton from "./components/FootnoteButton.js";
 
 interface EditorShowcaseCssVarsProps {
   submitHandler: (editor: LexicalEditor) => void;
@@ -34,7 +34,10 @@ function onError(error: Error) {
   console.error(error);
 }
 
-export const EditorShowcaseCssVars = ({ submitHandler, content }: EditorShowcaseCssVarsProps) => {
+export const EditorShowcaseCssVars = ({
+  submitHandler,
+  content,
+}: EditorShowcaseCssVarsProps) => {
   const editorRef = useRef<LexicalEditor | null>(null);
   const initialConfig = {
     namespace: "Showcase-CSSVars",
@@ -76,26 +79,31 @@ export const EditorShowcaseCssVars = ({ submitHandler, content }: EditorShowcase
   } satisfies InitialConfigType;
 
   return (
-    <div className="showcase-editor-css-vars" style={{
-      // CSS Variables for styling
-      '--luf-linebreak-color': '#3b82f6',
-      '--luf-linebreak-height': '4px',
-      '--luf-linebreak-spacing': '2rem',
-      '--luf-block-gap': '1rem',
-      '--luf-block-padding': '1rem 0',
-      '--luf-block-bg': '#f3f4f6',
-      '--luf-block-order-color': '#1e40af',
-      '--luf-block-order-size': '0.875em',
-      '--luf-block-editor-padding': '1rem',
-      '--luf-block-editor-bg': '#ffffff',
-      '--luf-block-editor-border-width': '2px',
-      '--luf-block-editor-border-color': '#3b82f6',
-      '--luf-block-editor-border-radius': '0.5rem',
-      '--luf-block-editor-static-border-width': '2px',
-      '--luf-block-editor-static-border-color': '#3b82f6',
-      '--luf-block-editor-static-padding': '0.5rem',
-      '--luf-block-delete-opacity': '0.7',
-    } as React.CSSProperties}>
+    <div
+      className="showcase-editor-css-vars"
+      style={
+        {
+          // CSS Variables for styling
+          "--luf-linebreak-color": "#3b82f6",
+          "--luf-linebreak-height": "4px",
+          "--luf-linebreak-spacing": "2rem",
+          "--luf-block-gap": "1rem",
+          "--luf-block-padding": "1rem 0",
+          "--luf-block-bg": "#f3f4f6",
+          "--luf-block-order-color": "#1e40af",
+          "--luf-block-order-size": "0.875em",
+          "--luf-block-editor-padding": "1rem",
+          "--luf-block-editor-bg": "#ffffff",
+          "--luf-block-editor-border-width": "2px",
+          "--luf-block-editor-border-color": "#3b82f6",
+          "--luf-block-editor-border-radius": "0.5rem",
+          "--luf-block-editor-static-border-width": "2px",
+          "--luf-block-editor-static-border-color": "#3b82f6",
+          "--luf-block-editor-static-padding": "0.5rem",
+          "--luf-block-delete-opacity": "0.7",
+        } as React.CSSProperties
+      }
+    >
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -124,6 +132,6 @@ export const EditorShowcaseCssVars = ({ submitHandler, content }: EditorShowcase
       </form>
     </div>
   );
-}
+};
 
 export default EditorShowcaseCssVars;

@@ -2,9 +2,7 @@
   "name": "@repo/store",
   "version": "0.0.0",
   "type": "module",
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "exports": {
     ".": "./dist/index.js",
     "./defaults/*": "./dist/defaults/*.js"

@@ -88,8 +88,8 @@ const FootnoteButton = () => {
   - [x] rerun tests
   - [x] circular import check
   - [x] fix deletion bug
-  - [ ] manually go through each test
-    - [ ] test tests serially
+  - [x] manually go through each test
+    - [x] test tests serially
   - [x] update readme to experimental
   - [x] update todos to include moving away from modules
   - [x] update readme to document moving to state apis / move away from uuids

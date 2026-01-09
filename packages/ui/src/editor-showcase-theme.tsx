@@ -1,12 +1,16 @@
 "use client";
+import { $generateNodesFromDOM } from "@lexical/html";
 import {
-  LexicalComposer,
   type InitialConfigType,
+  LexicalComposer,
 } from "@lexical/react/LexicalComposer";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
+import { EditorRefPlugin } from "@lexical/react/LexicalEditorRefPlugin";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
+import { $createHeadingNode, HeadingNode } from "@lexical/rich-text";
+import { $createTextNode, $getRoot, type LexicalEditor } from "lexical";
 import {
   FootnoteBlockNode,
   FootnoteLineBreakNode,
@@ -14,12 +18,8 @@ import {
   FootnoteReferenceNode,
   SharedHistoryContext,
 } from "lexical-ugly-footnotes/client";
-import { EditorRefPlugin } from "@lexical/react/LexicalEditorRefPlugin";
-import FootnoteButton from "./components/FootnoteButton.js";
 import { useRef } from "react";
-import { $createTextNode, $getRoot, type LexicalEditor } from "lexical";
-import { $createHeadingNode, HeadingNode } from "@lexical/rich-text";
-import { $generateNodesFromDOM } from "@lexical/html";
+import FootnoteButton from "./components/FootnoteButton.js";
 
 interface EditorShowcaseThemeProps {
   submitHandler: (editor: LexicalEditor) => void;
@@ -29,7 +29,8 @@ interface EditorShowcaseThemeProps {
 const theme = {
   uglyFootnotes: {
     block: {
-      container: "grid grid-cols-[auto_1fr_auto] gap-4 p-4 bg-purple-50 rounded-lg",
+      container:
+        "grid grid-cols-[auto_1fr_auto] gap-4 p-4 bg-purple-50 rounded-lg",
       order: "text-sm font-bold text-purple-600",
       editor: "border-2 border-purple-400 rounded-lg p-3 bg-white",
       editorFocused: "ring-2 ring-purple-500",
@@ -41,7 +42,8 @@ const theme = {
       supActive: "bg-purple-100",
     },
     lineBreak: {
-      container: "relative w-full py-4 cursor-pointer border-t-2 border-purple-300 my-4",
+      container:
+        "relative w-full py-4 cursor-pointer border-t-2 border-purple-300 my-4",
     },
   },
 };
@@ -50,7 +52,10 @@ function onError(error: Error) {
   console.error(error);
 }
 
-export const EditorShowcaseTheme = ({ submitHandler, content }: EditorShowcaseThemeProps) => {
+export const EditorShowcaseTheme = ({
+  submitHandler,
+  content,
+}: EditorShowcaseThemeProps) => {
   const editorRef = useRef<LexicalEditor | null>(null);
   const initialConfig = {
     namespace: "Showcase-Theme",
@@ -121,6 +126,6 @@ export const EditorShowcaseTheme = ({ submitHandler, content }: EditorShowcaseTh
       </form>
     </div>
   );
-}
+};
 
 export default EditorShowcaseTheme;

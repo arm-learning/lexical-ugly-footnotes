@@ -1,11 +1,11 @@
-import { readFile, writeFile, mkdir } from 'node:fs/promises';
-import { join, dirname, resolve } from 'node:path';
-import { existsSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { DEFAULT_JSON_STATE } from './defaults/json.js';
-import { DEFAULT_HTML_CONTENT } from './defaults/html.js';
+import { existsSync } from "node:fs";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { DEFAULT_HTML_CONTENT } from "./defaults/html.js";
+import { DEFAULT_JSON_STATE } from "./defaults/json.js";
 
-export type ContentFormat = 'json' | 'html';
+export type ContentFormat = "json" | "html";
 
 export interface StoreContent {
   json: string;
@@ -18,12 +18,12 @@ const getStoreDir = () => {
   // Get the directory where this file is located (packages/store/src)
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = dirname(__filename);
-  
+
   // Go up one level from src/ to get packages/store/
-  const storePackageDir = resolve(__dirname, '..');
-  
+  const storePackageDir = resolve(__dirname, "..");
+
   // Store files in packages/store/.store
-  return join(storePackageDir, '.store');
+  return join(storePackageDir, ".store");
 };
 
 const getFilePath = (demoType: string, format: ContentFormat): string => {
@@ -48,19 +48,19 @@ class FileStore {
 
   private async simulateDelay(): Promise<void> {
     if (this.delay > 0) {
-      return new Promise(resolve => setTimeout(resolve, this.delay));
+      return new Promise((resolve) => setTimeout(resolve, this.delay));
     }
   }
 
   private async loadFromFile(demoType: string): Promise<StoreContent | null> {
     try {
       await this.ensureDir();
-      const jsonPath = getFilePath(demoType, 'json');
-      const htmlPath = getFilePath(demoType, 'html');
-      
+      const jsonPath = getFilePath(demoType, "json");
+      const htmlPath = getFilePath(demoType, "html");
+
       const [jsonContent, htmlContent] = await Promise.all([
-        existsSync(jsonPath) ? readFile(jsonPath, 'utf-8') : null,
-        existsSync(htmlPath) ? readFile(htmlPath, 'utf-8') : null,
+        existsSync(jsonPath) ? readFile(jsonPath, "utf-8") : null,
+        existsSync(htmlPath) ? readFile(htmlPath, "utf-8") : null,
       ]);
 
       if (jsonContent || htmlContent) {
@@ -71,20 +71,26 @@ class FileStore {
       }
       return null;
     } catch (error) {
-      console.error(`[FileStore] Error loading from file for ${demoType}:`, error);
+      console.error(
+        `[FileStore] Error loading from file for ${demoType}:`,
+        error,
+      );
       return null;
     }
   }
 
-  private async saveToFile(demoType: string, content: StoreContent): Promise<void> {
+  private async saveToFile(
+    demoType: string,
+    content: StoreContent,
+  ): Promise<void> {
     try {
       await this.ensureDir();
-      const jsonPath = getFilePath(demoType, 'json');
-      const htmlPath = getFilePath(demoType, 'html');
-      
+      const jsonPath = getFilePath(demoType, "json");
+      const htmlPath = getFilePath(demoType, "html");
+
       await Promise.all([
-        writeFile(jsonPath, content.json, 'utf-8'),
-        writeFile(htmlPath, content.html, 'utf-8'),
+        writeFile(jsonPath, content.json, "utf-8"),
+        writeFile(htmlPath, content.html, "utf-8"),
       ]);
     } catch (error) {
       console.error(`[FileStore] Error saving to file for ${demoType}:`, error);
@@ -114,75 +120,83 @@ class FileStore {
     return defaults;
   }
 
-  async get(demoTypeOrFormat?: string, format?: ContentFormat): Promise<string> {
+  async get(
+    demoTypeOrFormat?: string,
+    format?: ContentFormat,
+  ): Promise<string> {
     await this.simulateDelay();
-    
+
     // Backward compatibility: if first arg is 'json' or 'html', treat it as format
     let demoType: string;
     let actualFormat: ContentFormat;
-    
-    if (demoTypeOrFormat === 'json' || demoTypeOrFormat === 'html') {
-      demoType = 'default';
+
+    if (demoTypeOrFormat === "json" || demoTypeOrFormat === "html") {
+      demoType = "default";
       actualFormat = demoTypeOrFormat as ContentFormat;
     } else {
-      demoType = demoTypeOrFormat || 'default';
-      actualFormat = format || 'json';
+      demoType = demoTypeOrFormat || "default";
+      actualFormat = format || "json";
     }
-    
+
     const content = await this.getContent(demoType);
-    return content[actualFormat] || '';
+    return content[actualFormat] || "";
   }
 
-  async set(content: string, demoTypeOrFormat?: string, format?: ContentFormat): Promise<void> {
+  async set(
+    content: string,
+    demoTypeOrFormat?: string,
+    format?: ContentFormat,
+  ): Promise<void> {
     await this.simulateDelay();
-    
+
     // Backward compatibility: if second arg is 'json' or 'html', treat it as format
     let demoType: string;
     let actualFormat: ContentFormat;
-    
-    if (demoTypeOrFormat === 'json' || demoTypeOrFormat === 'html') {
-      demoType = 'default';
+
+    if (demoTypeOrFormat === "json" || demoTypeOrFormat === "html") {
+      demoType = "default";
       actualFormat = demoTypeOrFormat as ContentFormat;
     } else {
-      demoType = demoTypeOrFormat || 'default';
-      actualFormat = format || 'json';
+      demoType = demoTypeOrFormat || "default";
+      actualFormat = format || "json";
     }
-    
+
     const storeContent = await this.getContent(demoType);
     storeContent[actualFormat] = content;
-    
+
     // Update cache
     this.cache.set(demoType, storeContent);
-    
+
     // Save to file
     await this.saveToFile(demoType, storeContent);
   }
 
-  async getAll(demoType = 'default'): Promise<StoreContent> {
+  async getAll(demoType = "default"): Promise<StoreContent> {
     await this.simulateDelay();
-    return { ...await this.getContent(demoType) };
+    return { ...(await this.getContent(demoType)) };
   }
 
-  async setAll(content: StoreContent, demoType = 'default'): Promise<void> {
+  async setAll(content: StoreContent, demoType = "default"): Promise<void> {
     await this.simulateDelay();
     this.cache.set(demoType, { ...content });
     await this.saveToFile(demoType, content);
   }
 
-  async reset(demoType = 'default', format?: ContentFormat): Promise<void> {
+  async reset(demoType = "default", format?: ContentFormat): Promise<void> {
     await this.simulateDelay();
-    
+
     const storeContent = await this.getContent(demoType);
-    
+
     if (format) {
-      storeContent[format] = format === 'json' 
-        ? JSON.stringify(DEFAULT_JSON_STATE)
-        : DEFAULT_HTML_CONTENT;
+      storeContent[format] =
+        format === "json"
+          ? JSON.stringify(DEFAULT_JSON_STATE)
+          : DEFAULT_HTML_CONTENT;
     } else {
       storeContent.json = JSON.stringify(DEFAULT_JSON_STATE);
       storeContent.html = DEFAULT_HTML_CONTENT;
     }
-    
+
     this.cache.set(demoType, storeContent);
     await this.saveToFile(demoType, storeContent);
   }

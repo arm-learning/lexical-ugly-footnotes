@@ -13,10 +13,13 @@ export default function Page() {
       <div className="w-full max-w-4xl space-y-8">
         {/* Demo Editors */}
         <section>
-          <h2 className="text-xl font-semibold mb-4 text-gray-800">Editor Demos</h2>
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">
+            Editor Demos
+          </h2>
           <p className="text-sm text-gray-600 mb-4">
-            Each demo supports both HTML and JSON formats with Editor and Preview views.
-            Use the navbar to switch between different styling approaches.
+            Each demo supports both HTML and JSON formats with Editor and
+            Preview views. Use the navbar to switch between different styling
+            approaches.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
             <Link
@@ -31,14 +34,18 @@ export default function Page() {
               className="px-4 py-3 bg-purple-100 text-purple-800 rounded-lg font-medium hover:bg-purple-200 transition-colors text-center border border-purple-300"
             >
               <div className="font-semibold">CSS Variables</div>
-              <div className="text-xs text-purple-600 mt-1">Custom properties</div>
+              <div className="text-xs text-purple-600 mt-1">
+                Custom properties
+              </div>
             </Link>
             <Link
               href="/demo/theme"
               className="px-4 py-3 bg-indigo-100 text-indigo-800 rounded-lg font-medium hover:bg-indigo-200 transition-colors text-center border border-indigo-300"
             >
               <div className="font-semibold">Theme Config</div>
-              <div className="text-xs text-indigo-600 mt-1">Tailwind classes</div>
+              <div className="text-xs text-indigo-600 mt-1">
+                Tailwind classes
+              </div>
             </Link>
             <Link
               href="/demo/override"

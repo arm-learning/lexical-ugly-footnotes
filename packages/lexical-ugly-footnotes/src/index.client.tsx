@@ -4,9 +4,18 @@ export * from "./nodes/LineBreakNode.client.js";
 export * from "./nodes/ReferenceNode.client.js";
 
 // Base classes and type guards (re-exported from client nodes, but also available directly)
-export { FootnoteBlockBase, $isFootnoteBlockNode } from "./shared/nodes/Block.base.js";
-export { FootnoteLineBreakBase, $isFootnoteLineBreakNode } from "./shared/nodes/LineBreak.base.js";
-export { FootnoteReferenceBase, $isFootnoteReferenceNode } from "./shared/nodes/Reference.base.js";
+export {
+  FootnoteBlockBase,
+  $isFootnoteBlockNode,
+} from "./shared/nodes/Block.base.js";
+export {
+  FootnoteLineBreakBase,
+  $isFootnoteLineBreakNode,
+} from "./shared/nodes/LineBreak.base.js";
+export {
+  FootnoteReferenceBase,
+  $isFootnoteReferenceNode,
+} from "./shared/nodes/Reference.base.js";
 
 // Components
 export * from "./components/BlockComponent.js";

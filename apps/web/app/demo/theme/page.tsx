@@ -4,44 +4,43 @@ import { UnifiedFormatTabs } from "../../_components/UnifiedFormatTabs";
 import { UnifiedViewTabs } from "../../_components/UnifiedViewTabs";
 
 // Force dynamic rendering to prevent caching
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 interface ThemePageProps {
-    searchParams: Promise<{ format?: string }>;
+  searchParams: Promise<{ format?: string }>;
 }
 
 export default async function ThemePage({ searchParams }: ThemePageProps) {
-    const params = await searchParams;
-    const format = (params.format as "html" | "json") || "html";
-    const demoType = "theme";
+  const params = await searchParams;
+  const format = (params.format as "html" | "json") || "html";
+  const demoType = "theme";
 
-    const content = await fileStore.get(demoType, format);
+  const content = await fileStore.get(demoType, format);
 
-    return (
-        <div>
-            <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold">Theme Configuration Editor</h2>
-                <div className="flex gap-4">
-                    <UnifiedFormatTabs demoType={demoType} />
-                    <UnifiedViewTabs demoType={demoType} />
-                </div>
-            </div>
-            <p className="text-gray-600 mb-4">
-                This editor uses Lexical theme configuration to style footnotes
-                with Tailwind CSS classes. The theme is passed through the
-                editor&apos;s initialConfig, using full Tailwind utilities for
-                both block.container and lineBreak.container.
-            </p>
-            <p className="text-gray-600 mb-4 text-sm">
-                Content is saved as {format.toUpperCase()} format
-            </p>
-            <UnifiedEditorClient
-                content={content}
-                format={format}
-                demoType={demoType}
-            />
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-semibold">Theme Configuration Editor</h2>
+        <div className="flex gap-4">
+          <UnifiedFormatTabs demoType={demoType} />
+          <UnifiedViewTabs demoType={demoType} />
         </div>
-    );
+      </div>
+      <p className="text-gray-600 mb-4">
+        This editor uses Lexical theme configuration to style footnotes with
+        Tailwind CSS classes. The theme is passed through the editor&apos;s
+        initialConfig, using full Tailwind utilities for both block.container
+        and lineBreak.container.
+      </p>
+      <p className="text-gray-600 mb-4 text-sm">
+        Content is saved as {format.toUpperCase()} format
+      </p>
+      <UnifiedEditorClient
+        content={content}
+        format={format}
+        demoType={demoType}
+      />
+    </div>
+  );
 }
-

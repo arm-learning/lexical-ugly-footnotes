@@ -6,8 +6,8 @@ import type { LexicalEditor } from "lexical";
 const CustomClientWrapper = ({ content }: { content: string }) => {
   const submitHandler = async (editor: LexicalEditor) => {
     console.log(editor);
-  }
-  console.log('custom client wrapper', { content });
+  };
+  console.log("custom client wrapper", { content });
   return (
     <>
       <div className="w-full max-w-2xl">
