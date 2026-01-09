@@ -1,5 +1,5 @@
 {
-  "name": "with-tailwind",
+  "name": "@repo/root",
   "private": true,
   "scripts": {
     "build": "turbo run build",
@@ -13,7 +13,10 @@
     "changeset": "changeset",
     "version-packages": "changeset version",
     "verify:package": "set -e; REPO_ROOT=$(pwd); cd packages/lexical-ugly-footnotes && pnpm build && TARBALL=$(pnpm pack --silent | tail -n 1) && cd \"$REPO_ROOT\" && TEST_DIR=$(mktemp -d -t test-publish-XXXXXX) && cd \"$TEST_DIR\" && npm init -y >/dev/null && pnpm add \"$REPO_ROOT/packages/lexical-ugly-footnotes/$TARBALL\" && node --input-type=module -e \"import('lexical-ugly-footnotes').then(() => console.log('✓ Package imports successfully')).catch(e => { console.error('✗ Import failed:', e); process.exit(1); })\" && cd \"$REPO_ROOT\" && rm -rf \"$TEST_DIR\" && rm -f \"$REPO_ROOT/packages/lexical-ugly-footnotes/\"*.tgz",
-    "release": "pnpm build && pnpm verify:package && changeset publish"
+    "release": "pnpm build && pnpm verify:package && changeset publish",
+    "release:dry-run": "pnpm build && pnpm verify:package && changeset publish --dry-run",
+    "pack:inspect:footnotes": "pnpm -C packages/lexical-ugly-footnotes pack:inspect",
+    "pack:size:footnotes": "pnpm -C packages/lexical-ugly-footnotes pack:size"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
@@ -26,6 +29,6 @@
   },
   "packageManager": "pnpm@10.19.0",
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   }
 }

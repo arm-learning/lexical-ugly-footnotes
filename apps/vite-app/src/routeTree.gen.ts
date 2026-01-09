@@ -8,80 +8,80 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/__root'
-import { Route as PreviewRouteImport } from './routes/preview'
-import { Route as EditorRouteImport } from './routes/editor'
-import { Route as CustomRouteImport } from './routes/custom'
+import { Route as rootRouteImport } from "./routes/__root";
+import { Route as CustomRouteImport } from "./routes/custom";
+import { Route as EditorRouteImport } from "./routes/editor";
+import { Route as PreviewRouteImport } from "./routes/preview";
 
 const PreviewRoute = PreviewRouteImport.update({
-  id: '/preview',
-  path: '/preview',
+  id: "/preview",
+  path: "/preview",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const EditorRoute = EditorRouteImport.update({
-  id: '/editor',
-  path: '/editor',
+  id: "/editor",
+  path: "/editor",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const CustomRoute = CustomRouteImport.update({
-  id: '/custom',
-  path: '/custom',
+  id: "/custom",
+  path: "/custom",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 
 export interface FileRoutesByFullPath {
-  '/custom': typeof CustomRoute
-  '/editor': typeof EditorRoute
-  '/preview': typeof PreviewRoute
+  "/custom": typeof CustomRoute;
+  "/editor": typeof EditorRoute;
+  "/preview": typeof PreviewRoute;
 }
 export interface FileRoutesByTo {
-  '/custom': typeof CustomRoute
-  '/editor': typeof EditorRoute
-  '/preview': typeof PreviewRoute
+  "/custom": typeof CustomRoute;
+  "/editor": typeof EditorRoute;
+  "/preview": typeof PreviewRoute;
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport
-  '/custom': typeof CustomRoute
-  '/editor': typeof EditorRoute
-  '/preview': typeof PreviewRoute
+  __root__: typeof rootRouteImport;
+  "/custom": typeof CustomRoute;
+  "/editor": typeof EditorRoute;
+  "/preview": typeof PreviewRoute;
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/custom' | '/editor' | '/preview'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/custom' | '/editor' | '/preview'
-  id: '__root__' | '/custom' | '/editor' | '/preview'
-  fileRoutesById: FileRoutesById
+  fileRoutesByFullPath: FileRoutesByFullPath;
+  fullPaths: "/custom" | "/editor" | "/preview";
+  fileRoutesByTo: FileRoutesByTo;
+  to: "/custom" | "/editor" | "/preview";
+  id: "__root__" | "/custom" | "/editor" | "/preview";
+  fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
-  CustomRoute: typeof CustomRoute
-  EditorRoute: typeof EditorRoute
-  PreviewRoute: typeof PreviewRoute
+  CustomRoute: typeof CustomRoute;
+  EditorRoute: typeof EditorRoute;
+  PreviewRoute: typeof PreviewRoute;
 }
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
-    '/preview': {
-      id: '/preview'
-      path: '/preview'
-      fullPath: '/preview'
-      preLoaderRoute: typeof PreviewRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/editor': {
-      id: '/editor'
-      path: '/editor'
-      fullPath: '/editor'
-      preLoaderRoute: typeof EditorRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/custom': {
-      id: '/custom'
-      path: '/custom'
-      fullPath: '/custom'
-      preLoaderRoute: typeof CustomRouteImport
-      parentRoute: typeof rootRouteImport
-    }
+    "/preview": {
+      id: "/preview";
+      path: "/preview";
+      fullPath: "/preview";
+      preLoaderRoute: typeof PreviewRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/editor": {
+      id: "/editor";
+      path: "/editor";
+      fullPath: "/editor";
+      preLoaderRoute: typeof EditorRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/custom": {
+      id: "/custom";
+      path: "/custom";
+      fullPath: "/custom";
+      preLoaderRoute: typeof CustomRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
   }
 }
 
@@ -89,7 +89,7 @@ const rootRouteChildren: RootRouteChildren = {
   CustomRoute: CustomRoute,
   EditorRoute: EditorRoute,
   PreviewRoute: PreviewRoute,
-}
+};
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+  ._addFileTypes<FileRouteTypes>();
