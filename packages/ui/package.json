@@ -4,6 +4,7 @@
   "type": "module",
   "sideEffects": ["**/*.css"],
   "files": ["dist"],
+  "private": true,
   "exports": {
     ".": "./dist/index.js",
     "./styles.css": "./dist/index.css",

@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "type": "module",
   "files": ["dist"],
+  "private": true,
   "exports": {
     ".": "./dist/index.js",
     "./defaults/*": "./dist/defaults/*.js"
