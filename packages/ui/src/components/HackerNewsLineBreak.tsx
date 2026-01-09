@@ -1,6 +1,8 @@
 import {
   type LineBreakComponentProps,
   createCustomLineBreakNode,
+  type FootnoteLineBreakNode,
+  type CustomLineBreakNodeClass,
 } from "lexical-ugly-footnotes/client";
 
 const HackerNewsLineBreak = ({ nodeKey }: LineBreakComponentProps) => {
@@ -10,13 +12,13 @@ const HackerNewsLineBreak = ({ nodeKey }: LineBreakComponentProps) => {
 
 const [HackerNewsLineBreakNode, hackerNewsLineBreakReplacement] =
   createCustomLineBreakNode(HackerNewsLineBreak, {
-    exportDOM: (node) => {
+    exportDOM: (node: FootnoteLineBreakNode) => {
       const br = document.createElement("br");
       return {
         element: br,
       };
     },
-    importDOM: (NodeClass) => {
+    importDOM: (NodeClass: CustomLineBreakNodeClass) => {
       return {
         br: (domNode: Node) => {
           if (domNode instanceof HTMLBRElement) {
