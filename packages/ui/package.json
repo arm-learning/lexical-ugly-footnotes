@@ -19,6 +19,9 @@
     "dev:styles": "tailwindcss -i ./src/styles.css -o ./dist/index.css --watch",
     "dev:components": "tsc --watch"
   },
+  "dependencies": {
+    "lexical-ugly-footnotes": "workspace:*"
+  },
   "peerDependencies": {
     "react": "catalog:",
     "lexical-ugly-footnotes": "workspace:*"

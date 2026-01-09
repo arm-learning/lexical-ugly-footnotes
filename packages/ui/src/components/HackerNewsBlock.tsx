@@ -11,6 +11,7 @@ import {
   BLOCK_ATTR,
   type BlockComponentProps,
   createCustomBlockNode,
+  type FootnoteBlockNode,
 } from "lexical-ugly-footnotes/client";
 import {
   $removeFootnoteByBlockNodeKey,
@@ -101,7 +102,7 @@ const HackerNewsBlock = ({
 const [HackerNewsBlockNode, hackerNewsBlockReplacement] = createCustomBlockNode(
   HackerNewsBlock,
   {
-    createDOM: (node) => {
+    createDOM: (node: FootnoteBlockNode) => {
       const div = document.createElement("div");
       addClassNamesToElement(div, "hn-block-container");
       div.setAttribute(BLOCK_ATTR.container, "");
