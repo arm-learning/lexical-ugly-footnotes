@@ -1,0 +1,1 @@
+export const LUF_PREFIX = "luf";
