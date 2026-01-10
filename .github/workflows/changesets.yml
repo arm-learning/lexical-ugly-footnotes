@@ -16,12 +16,9 @@ jobs:
   create-release-pr:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      pull-requests: write
-    env:
-      # Make auth available to *all* steps, including publish
-      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      contents: write       # Required to push the version commit
+      pull-requests: write  # Required to open the Release PR
+      id-token: write       # <--- REQUIRED for Trusted Publishing (OIDC)
 
     steps:
       - uses: actions/checkout@v4
@@ -36,13 +33,12 @@ jobs:
         with:
           node-version: '20'
           cache: 'pnpm'
-          registry-url: https://registry.npmjs.org/
+          registry-url: 'https://registry.npmjs.org'
+          # Note: We do NOT need to set NODE_AUTH_TOKEN here because
+          # 'id-token: write' above handles the authentication automatically.
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
-      - name: Verify npm auth (should print your npm username)
-        run: npm whoami
 
       - name: Create Release Pull Request / Publish
         uses: changesets/action@v1
