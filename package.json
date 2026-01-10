@@ -17,6 +17,7 @@
     "release:dry-run": "pnpm build && pnpm verify:package && changeset publish --dry-run",
     "_release": "pnpm build && pnpm verify:package && changeset publish",
     "release": "changeset publish",
+    "publish:ci": "pnpm build && pnpm verify:package && rm pnpm-lock.yaml && npx changeset publish",
     "release:plan": "pnpm build && pnpm verify:package && changeset status --since=main && changeset version --snapshot",
     "pack:inspect:footnotes": "pnpm -C packages/lexical-ugly-footnotes pack:inspect",
     "pack:size:footnotes": "pnpm -C packages/lexical-ugly-footnotes pack:size"
