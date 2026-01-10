@@ -49,7 +49,7 @@
     "dev": "turbo run dev:styles dev:components",
     "circular:npx": "npx madge --circular --extensions ts,tsx --ts-config ./tsconfig.json ./src",
     "pack:test": "rm -f ./*.tgz && pnpm pack --silent && tar -xzf ./*.tgz -O package/package.json",
-    "ci:publish": "pnpm build && pnpm verify:package && rm pnpm-lock.yaml && npx changeset publish",
+   "publish:ci": "pnpm build && pnpm verify:package && rm pnpm-lock.yaml && npx changeset publish",
     "pack:test:gen": "rm -f ./*.tgz && TARBALL=$(pnpm pack --silent | tail -n 1) && echo \"packed: $TARBALL\" && ls -lh \"$TARBALL\" && tar -xzf \"$TARBALL\" -O package/package.json",
     "pack:inspect": "rm -f ./*.tgz && TARBALL=$(pnpm pack --silent | tail -n 1) && tar -xzf \"$TARBALL\" -O package/package.json",
     "pack:size": "rm -f ./*.tgz && TARBALL=$(pnpm pack --silent | tail -n 1) && echo \"gzipped tarball:\" && ls -lh \"$TARBALL\" && mkdir -p /tmp/pkgsize && rm -rf /tmp/pkgsize/* && tar -xzf \"$TARBALL\" -C /tmp/pkgsize && echo \"unpacked size:\" && du -sh /tmp/pkgsize/package"
