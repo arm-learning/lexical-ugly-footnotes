@@ -40,10 +40,26 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # - name: Create Release Pull Request / Publish
+      #   uses: changesets/action@v1
+      #   with:
+      #     publish: pnpm release
+      #     version: pnpm version-packages
+      #     commit: 'chore: version packages'
+      #     title: 'chore: version packages'
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create Release Pull Request / Publish
         uses: changesets/action@v1
         with:
-          publish: pnpm release
+          # 1. Build using pnpm (so artifacts exist)
+          # 2. DELETE the lockfile & .npmrc (Tricks Changesets into using native npm)
+          # 3. Run publish using npx (which uses the native npm binary)
+          publish: |
+            pnpm build
+            pnpm verify:package
+            rm pnpm-lock.yaml .npmrc
+            npx changeset publish
           version: pnpm version-packages
           commit: 'chore: version packages'
           title: 'chore: version packages'
