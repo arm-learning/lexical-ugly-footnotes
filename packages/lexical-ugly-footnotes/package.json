@@ -79,5 +79,9 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arm-learning/lexical-ugly-footnotes.git"
   }
 }
