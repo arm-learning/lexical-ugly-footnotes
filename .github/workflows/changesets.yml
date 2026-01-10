@@ -52,14 +52,8 @@ jobs:
       - name: Create Release Pull Request / Publish
         uses: changesets/action@v1
         with:
-          # 1. Build using pnpm (so artifacts exist)
-          # 2. DELETE the lockfile & .npmrc (Tricks Changesets into using native npm)
-          # 3. Run publish using npx (which uses the native npm binary)
-          publish: |
-            pnpm build
-            pnpm verify:package
-            rm pnpm-lock.yaml .npmrc
-            npx changeset publish
+          # We ignore the 'release' script in package.json and run the commands manually here
+          publish: pnpm build && pnpm verify:package && rm pnpm-lock.yaml && npx changeset publish
           version: pnpm version-packages
           commit: 'chore: version packages'
           title: 'chore: version packages'
