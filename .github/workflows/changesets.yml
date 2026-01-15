@@ -1,5 +1,5 @@
 name: Changesets
-# test 5
+
 on:
   push:
     branches: [main]
@@ -31,15 +31,24 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'pnpm'
-          registry-url: 'https://registry.npmjs.org'
           # Note: We do NOT need to set NODE_AUTH_TOKEN here because
           # 'id-token: write' above handles the authentication automatically.
 
+      - name: Ensure npm supports trusted publishing
+        run: npm i -g npm@^11.5.1
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
+      - name: Show tool versions
+        run: |
+          node -v
+          npm -v
+          pnpm -v
+      - name: Check npm auth config (should NOT show a token)
+        run: |
+          npm config get //registry.npmjs.org/:_authToken || true
+          npm config list
       # - name: Create Release Pull Request / Publish
       #   uses: changesets/action@v1
       #   with:
