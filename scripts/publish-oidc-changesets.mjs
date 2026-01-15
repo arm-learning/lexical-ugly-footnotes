@@ -52,15 +52,21 @@ try {
 }
 
 log(`- Packing ${name}@${version} with pnpm…`);
-const packOut = sh(
-  `pnpm -C ${JSON.stringify(pkg.path)} pack --pack-destination ${JSON.stringify(tarDir)}`
-);
-const tgzName = packOut.split("\n").pop().trim();
-const tgzPath = path.join(tarDir, tgzName);
+sh(`pnpm -C ${JSON.stringify(pkg.path)} pack --pack-destination ${JSON.stringify(tarDir)}`);
 
-if (!fs.existsSync(tgzPath)) {
-  throw new Error(`Expected tarball not found: ${tgzPath}`);
+// Find the tarball we just created (most recent .tgz in tarDir)
+const tgzFiles = fs
+  .readdirSync(tarDir)
+  .filter((f) => f.endsWith(".tgz"))
+  .map((f) => ({ f, mtime: fs.statSync(path.join(tarDir, f)).mtimeMs }))
+  .sort((a, b) => b.mtime - a.mtime);
+
+if (tgzFiles.length === 0) {
+  throw new Error(`No .tgz files found in ${tarDir} after packing`);
 }
+
+const tgzName = tgzFiles[0].f;
+const tgzPath = path.join(tarDir, tgzName);
 
 log(`  Publishing ${tgzName} via npm (OIDC)…`);
 shInherit(`npm publish ${JSON.stringify(tgzPath)} --access public --provenance`);
