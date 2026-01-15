@@ -19,19 +19,12 @@ fs.mkdirSync(tarDir, { recursive: true });
 
 // 1) Ask Changesets what would be published from THIS commit state
 log("→ Computing release plan via changesets…");
-const statusRaw = sh("pnpm exec -- changeset status --output=json");
+const outFile = path.join(".tarballs", "changeset-status.json");
+shInherit(`pnpm exec -- changeset status --output ${JSON.stringify(outFile)}`);
 
-const start = statusRaw.trimStart();
-if (!start.startsWith("[") && !start.startsWith("{")) {
-  throw new Error(
-    `Expected JSON from changeset status but got:\n${statusRaw.slice(0, 300)}`
-  );
-}
-// changeset status JSON is an array like:
-// [{ name, type, oldVersion, newVersion, changesets: [...] }, ...]
-const plan = JSON.parse(statusRaw);
+const statusJson = fs.readFileSync(path.join(root, outFile), "utf8");
+const plan = JSON.parse(statusJson);
 
-// If nothing to publish, exit cleanly (changesets/action expects this)
 if (!Array.isArray(plan) || plan.length === 0) {
   log("No packages to publish (changesets plan empty).");
   process.exit(0);
@@ -39,35 +32,33 @@ if (!Array.isArray(plan) || plan.length === 0) {
 
 log(`Changesets plans to publish ${plan.length} package(s).`);
 
-// 2) For each planned package, pack with pnpm from its directory and publish tarball with npm (OIDC)
+// Build name -> path map once
+const listRaw = sh("pnpm -r list --depth -1 --json --silent");
+const pkgs = JSON.parse(listRaw);
+const pathByName = new Map(pkgs.map((p) => [p.name, p.path]));
+
+// 2) Publish each planned package
 for (const item of plan) {
   const name = item.name;
   const newVersion = item.newVersion;
 
-  // Find workspace package location via pnpm list JSON
-  const listRaw = sh("pnpm -r list --depth -1 --json --silent");
-  const pkgs = JSON.parse(listRaw);
-  const pkg = pkgs.find((p) => p.name === name);
+  const pkgPath = pathByName.get(name);
+  if (!pkgPath) throw new Error(`Could not find workspace path for ${name}`);
 
-  if (!pkg?.path) {
-    throw new Error(`Could not find workspace path for ${name}`);
-  }
-
-  const pkgJsonPath = path.join(pkg.path, "package.json");
+  const pkgJsonPath = path.join(pkgPath, "package.json");
   const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, "utf8"));
+
   if (pkgJson.private === true) {
     log(`- Skipping ${name} (private:true)`);
     continue;
   }
 
-  // Sanity: ensure local version matches changesets newVersion
   if (pkgJson.version !== newVersion) {
     throw new Error(
-      `${name} version mismatch. package.json=${pkgJson.version} changesets=${newVersion}`
+      `${name} version mismatch. package.json=${pkgJson.version} changesets=${newVersion}`,
     );
   }
 
-  // Extra safety: if already published, skip
   let exists = false;
   try {
     sh(`npm view ${name}@${newVersion} version`);
@@ -82,7 +73,7 @@ for (const item of plan) {
 
   log(`- Packing ${name}@${newVersion} with pnpm…`);
   const packOut = sh(
-    `pnpm -C ${JSON.stringify(pkg.path)} pack --pack-destination ${JSON.stringify(tarDir)}`
+    `pnpm -C ${JSON.stringify(pkgPath)} pack --pack-destination ${JSON.stringify(tarDir)}`,
   );
   const tgzName = packOut.split("\n").pop().trim();
   const tgzPath = path.join(tarDir, tgzName);
@@ -92,9 +83,8 @@ for (const item of plan) {
   }
 
   log(`  Publishing ${tgzName} via npm (OIDC)…`);
-  shInherit(
-    `npm publish ${JSON.stringify(tgzPath)} --access public --provenance`
-  );
+  shInherit(`npm whoami`);
+  shInherit(`npm publish ${JSON.stringify(tgzPath)} --access public --provenance`);
 }
 
 log("Done.");
