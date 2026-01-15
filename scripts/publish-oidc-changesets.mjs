@@ -19,7 +19,7 @@ fs.mkdirSync(tarDir, { recursive: true });
 
 // 1) Ask Changesets what would be published from THIS commit state
 log("→ Computing release plan via changesets…");
-const statusRaw = sh("pnpm changeset status --output=json");
+const statusRaw = sh("pnpm exec changeset status --output=json");
 
 // changeset status JSON is an array like:
 // [{ name, type, oldVersion, newVersion, changesets: [...] }, ...]
@@ -39,7 +39,7 @@ for (const item of plan) {
   const newVersion = item.newVersion;
 
   // Find workspace package location via pnpm list JSON
-  const listRaw = sh("pnpm -r list --depth -1 --json");
+  const listRaw = sh("pnpm -r list --depth -1 --json --silent");
   const pkgs = JSON.parse(listRaw);
   const pkg = pkgs.find((p) => p.name === name);
 
