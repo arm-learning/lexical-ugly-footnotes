@@ -19,8 +19,14 @@ fs.mkdirSync(tarDir, { recursive: true });
 
 // 1) Ask Changesets what would be published from THIS commit state
 log("→ Computing release plan via changesets…");
-const statusRaw = sh("pnpm exec changeset status --output=json");
+const statusRaw = sh("pnpm exec -- changeset status --output=json");
 
+const start = statusRaw.trimStart();
+if (!start.startsWith("[") && !start.startsWith("{")) {
+  throw new Error(
+    `Expected JSON from changeset status but got:\n${statusRaw.slice(0, 300)}`
+  );
+}
 // changeset status JSON is an array like:
 // [{ name, type, oldVersion, newVersion, changesets: [...] }, ...]
 const plan = JSON.parse(statusRaw);
