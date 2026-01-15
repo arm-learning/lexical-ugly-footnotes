@@ -13,7 +13,7 @@ import {
 } from "../core/component-utils.js";
 import { theme } from "../nodes/BlockNode.server.js";
 import type { BlockComponentProps } from "../types/block.js";
-import { useSharedHistoryState } from "./SharedHistoryState.js";
+// import { useSharedHistoryState } from "./SharedHistoryState.js";
 
 // X icon component
 const XIcon = ({ className, ...props }: React.SVGProps<SVGSVGElement>) => (
@@ -70,13 +70,13 @@ const FootnoteBlockComponent = ({
   nodeKey,
   order = 0,
   blockNote,
-  sharedHistoryState = true,
+  // sharedHistoryState = true,
   classNames,
 }: BlockComponentProps) => {
   const [editor] = useLexicalComposerContext();
   const [isSelected, setSelected, clearSelection] =
     useLexicalNodeSelection(nodeKey);
-  const { historyState } = useSharedHistoryState();
+  // const { historyState } = useSharedHistoryState();
 
   const onSubmit = () => {
     editor.update(
@@ -115,7 +115,7 @@ const FootnoteBlockComponent = ({
             target: "_blank",
           }}
         />
-        <HistoryPlugin externalHistoryState={historyState} />
+        {/* <HistoryPlugin externalHistoryState={historyState} /> */}
         {/* {sharedHistoryState ? <SharedHistoryStateComponent /> : <HistoryPlugin />} */}
       </LexicalNestedComposer>
       <button className={classNames.delete} type="button" onClick={onSubmit}>
