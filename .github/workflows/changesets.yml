@@ -53,7 +53,7 @@ jobs:
         uses: changesets/action@v1
         with:
           # We ignore the 'release' script in package.json and run the commands manually here
-          publish: pnpm publish:ci
+          publish: pnpm publish:ci:oidc
           version: pnpm version-packages
           commit: 'chore: version packages'
           title: 'chore: version packages'

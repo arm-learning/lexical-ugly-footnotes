@@ -17,10 +17,11 @@
     "release:dry-run": "pnpm build && pnpm verify:package && changeset publish --dry-run",
     "_release": "pnpm build && pnpm verify:package && changeset publish",
     "release": "changeset publish",
-    "publish:ci": "pnpm build && pnpm verify:package && rm pnpm-lock.yaml && npx changeset publish",
+    "_publish:ci": "pnpm build && pnpm verify:package && npx changeset publish",
     "release:plan": "pnpm build && pnpm verify:package && changeset status --since=main && changeset version --snapshot",
     "pack:inspect:footnotes": "pnpm -C packages/lexical-ugly-footnotes pack:inspect",
-    "pack:size:footnotes": "pnpm -C packages/lexical-ugly-footnotes pack:size"
+    "pack:size:footnotes": "pnpm -C packages/lexical-ugly-footnotes pack:size",
+    "publish:ci:oidc": "pnpm build && pnpm verify:package && node ./scripts/publish-oidc-changesets.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
