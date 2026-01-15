@@ -1,5 +1,11 @@
 # lexical-ugly-footnotes
 
+## 0.1.4
+
+### Patch Changes
+
+- 9d25448: remove unused history hook from default
+
 ## 0.1.3
 
 ### Patch Changes
